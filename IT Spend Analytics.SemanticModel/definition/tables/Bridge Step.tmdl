@@ -1,0 +1,56 @@
+/// Disconnected table that lists the steps of the variance-to-budget bridge (waterfall): underlying variance for each cost category, then FX translation.
+table 'Bridge Step'
+	lineageTag: 4006143b-884d-4754-bc51-00cc52ed9434
+
+	/// Bridge step label.
+	column Step
+		dataType: string
+		lineageTag: d6a3a9bd-e95a-4995-b933-e25e2738cb9b
+		summarizeBy: none
+		sourceColumn: Step
+		sortByColumn: Sort
+
+	column Sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: bd46f2a9-20c2-434d-b27a-11bc209d0bec
+		summarizeBy: none
+		sourceColumn: Sort
+
+	column 'Step Type'
+		dataType: string
+		isHidden
+		lineageTag: a5b89ddc-905e-4c1c-be08-a9622aa92bda
+		summarizeBy: none
+		sourceColumn: Step Type
+
+	/// Cost category the step maps to (blank for FX).
+	column Category
+		dataType: string
+		isHidden
+		lineageTag: 74b47d12-20af-4eba-baa7-1ea4fb65693c
+		summarizeBy: none
+		sourceColumn: Category
+
+	partition 'Bridge Step' = m
+		mode: import
+		source =
+				let
+					Source = #table(
+						type table [Step = text, Sort = Int64.Type, Step Type = text, Category = text],
+						{
+							{"Subscriptions", 1, "Category", "Software Subscriptions"},
+							{"Cloud", 2, "Category", "Cloud Services"},
+							{"Apps & maint.", 3, "Category", "Applications & Maintenance"},
+							{"IT staff", 4, "Category", "IT Employees"},
+							{"Contractors", 5, "Category", "IT Contractors"},
+							{"Projects", 6, "Category", "Technology Projects"},
+							{"FX", 7, "FX", null}
+						}
+					)
+				in
+					Source
+
+	annotation PBI_ResultType = Table
+

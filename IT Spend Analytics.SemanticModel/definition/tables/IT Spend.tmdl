@@ -1,0 +1,86 @@
+/// Actual IT spend in local currency, one row per month × entity × department × cost category × vendor × project. Translated to cGBP in measures using the month-end rate of the entity's currency.
+table 'IT Spend'
+	lineageTag: a4d9f86f-06e7-44d1-95f4-3e2e348931db
+
+	/// First day of the accounting month.
+	column Month
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: 0ed29525-3e67-45c1-b189-412d1768ef5d
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EntityKey
+		dataType: string
+		isHidden
+		lineageTag: 292c354d-bbd4-4225-853d-6465fb50012b
+		summarizeBy: none
+		sourceColumn: EntityKey
+
+	column DepartmentKey
+		dataType: string
+		isHidden
+		lineageTag: a7bc0ec3-4739-4ef7-b43d-407ab414d643
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+	column CategoryKey
+		dataType: string
+		isHidden
+		lineageTag: 3c27405a-fc75-449c-b96e-ec21c4a95049
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+	column VendorKey
+		dataType: string
+		isHidden
+		lineageTag: 4882303d-7236-49b7-be66-ce39226dde44
+		summarizeBy: none
+		sourceColumn: VendorKey
+
+	column ProjectKey
+		dataType: string
+		isHidden
+		lineageTag: 3b10375e-4967-4533-a9ec-204e0f54c282
+		summarizeBy: none
+		sourceColumn: ProjectKey
+
+	/// Transaction (local) currency of the row = entity functional currency.
+	column Currency
+		dataType: string
+		isHidden
+		lineageTag: 032b7465-664d-4a89-b165-5a5d4692ce31
+		summarizeBy: none
+		sourceColumn: Currency
+
+	/// Actual amount in local currency.
+	column 'Amount LC'
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: a4e59470-1444-468b-a621-6cf5702e6bee
+		summarizeBy: sum
+		sourceColumn: AmountLC
+
+	column CurrencyMonthKey
+		dataType: string
+		isHidden
+		lineageTag: 4664c155-9d9e-46f6-956e-dc273c172fea
+		summarizeBy: none
+		sourceColumn: CurrencyMonthKey
+
+	partition 'IT Spend' = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("fact_it_spend.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"Month", type date}, {"EntityKey", type text}, {"DepartmentKey", type text}, {"CategoryKey", type text}, {"VendorKey", type text}, {"ProjectKey", type text}, {"Currency", type text}, {"AmountLC", Currency.Type}}, "en-US"),
+					AddFxKey = Table.AddColumn(Typed, "CurrencyMonthKey", each [Currency] & "|" & Date.ToText([Month], [Format = "yyyy-MM", Culture = "en-US"]), type text)
+				in
+					AddFxKey
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,464 @@
+{
+ "p1Executive/bridge": {
+  "x": 12,
+  "y": 260,
+  "width": 416,
+  "height": 452
+ },
+ "p1Executive/btnClear": {
+  "x": 232,
+  "y": 58,
+  "width": 84,
+  "height": 24
+ },
+ "p1Executive/ctrlCard": {
+  "x": 436,
+  "y": 260,
+  "width": 476,
+  "height": 36
+ },
+ "p1Executive/currencyNote": {
+  "x": 20,
+  "y": 62,
+  "width": 208,
+  "height": 18
+ },
+ "p1Executive/deptMatrix": {
+  "x": 436,
+  "y": 304,
+  "width": 476,
+  "height": 252
+ },
+ "p1Executive/fxRates": {
+  "x": 436,
+  "y": 564,
+  "width": 476,
+  "height": 148
+ },
+ "p1Executive/hdrTitle": {
+  "x": 12,
+  "y": 4,
+  "width": 312,
+  "height": 80
+ },
+ "p1Executive/kpi1": {
+  "x": 12,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/kpi2": {
+  "x": 170,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/kpi3": {
+  "x": 328,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/kpi4": {
+  "x": 486,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/kpi5": {
+  "x": 644,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/kpi6": {
+  "x": 802,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/kpi7": {
+  "x": 960,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/kpi8": {
+  "x": 1118,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p1Executive/lblHighlight": {
+  "x": 684,
+  "y": 261,
+  "width": 68,
+  "height": 34
+ },
+ "p1Executive/narrative": {
+  "x": 12,
+  "y": 92,
+  "width": 1256,
+  "height": 76
+ },
+ "p1Executive/outturn": {
+  "x": 920,
+  "y": 490,
+  "width": 348,
+  "height": 222
+ },
+ "p1Executive/slAnalyseBy": {
+  "x": 516,
+  "y": 259,
+  "width": 160,
+  "height": 32
+ },
+ "p1Executive/slCurrency": {
+  "x": 860,
+  "y": 4,
+  "width": 140,
+  "height": 80
+ },
+ "p1Executive/slDepartment": {
+  "x": 682,
+  "y": 4,
+  "width": 170,
+  "height": 80
+ },
+ "p1Executive/slFiscalYear": {
+  "x": 332,
+  "y": 4,
+  "width": 150,
+  "height": 80
+ },
+ "p1Executive/slRateScenario": {
+  "x": 1008,
+  "y": 4,
+  "width": 132,
+  "height": 80
+ },
+ "p1Executive/slRegion": {
+  "x": 490,
+  "y": 4,
+  "width": 184,
+  "height": 80
+ },
+ "p1Executive/slScale": {
+  "x": 1148,
+  "y": 4,
+  "width": 120,
+  "height": 80
+ },
+ "p1Executive/slVarianceFlag": {
+  "x": 741.0526315789474,
+  "y": 259.01996370235935,
+  "width": 170.74410163339383,
+  "height": 32.52268602540835
+ },
+ "p1Executive/trend": {
+  "x": 920,
+  "y": 260,
+  "width": 348,
+  "height": 222
+ },
+ "p2SpendRunCosts/actions": {
+  "x": 428,
+  "y": 260,
+  "width": 408,
+  "height": 176
+ },
+ "p2SpendRunCosts/btnClear": {
+  "x": 232,
+  "y": 58,
+  "width": 84,
+  "height": 24
+ },
+ "p2SpendRunCosts/cloudTrend": {
+  "x": 844,
+  "y": 260,
+  "width": 424,
+  "height": 222
+ },
+ "p2SpendRunCosts/currencyNote": {
+  "x": 20,
+  "y": 62,
+  "width": 208,
+  "height": 18
+ },
+ "p2SpendRunCosts/explorer": {
+  "x": 12,
+  "y": 340,
+  "width": 408,
+  "height": 372
+ },
+ "p2SpendRunCosts/hdrTitle": {
+  "x": 12,
+  "y": 4,
+  "width": 312,
+  "height": 80
+ },
+ "p2SpendRunCosts/kpi1": {
+  "x": 12,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/kpi2": {
+  "x": 170,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/kpi3": {
+  "x": 328,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/kpi4": {
+  "x": 486,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/kpi5": {
+  "x": 644,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/kpi6": {
+  "x": 802,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/kpi7": {
+  "x": 960,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/kpi8": {
+  "x": 1118,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p2SpendRunCosts/licenceTable": {
+  "x": 428,
+  "y": 444,
+  "width": 408,
+  "height": 268
+ },
+ "p2SpendRunCosts/narrative": {
+  "x": 12,
+  "y": 92,
+  "width": 1256,
+  "height": 76
+ },
+ "p2SpendRunCosts/peopleMix": {
+  "x": 844,
+  "y": 490,
+  "width": 424,
+  "height": 222
+ },
+ "p2SpendRunCosts/slAnalyseBy": {
+  "x": 12,
+  "y": 260,
+  "width": 200,
+  "height": 72
+ },
+ "p2SpendRunCosts/slCurrency": {
+  "x": 860,
+  "y": 4,
+  "width": 140,
+  "height": 80
+ },
+ "p2SpendRunCosts/slDepartment": {
+  "x": 682,
+  "y": 4,
+  "width": 170,
+  "height": 80
+ },
+ "p2SpendRunCosts/slFiscalYear": {
+  "x": 332,
+  "y": 4,
+  "width": 150,
+  "height": 80
+ },
+ "p2SpendRunCosts/slRateScenario": {
+  "x": 1008,
+  "y": 4,
+  "width": 132,
+  "height": 80
+ },
+ "p2SpendRunCosts/slRegion": {
+  "x": 490,
+  "y": 4,
+  "width": 184,
+  "height": 80
+ },
+ "p2SpendRunCosts/slScale": {
+  "x": 1148,
+  "y": 4,
+  "width": 120,
+  "height": 80
+ },
+ "p2SpendRunCosts/slShow": {
+  "x": 220,
+  "y": 260,
+  "width": 200,
+  "height": 72
+ },
+ "p3Delivery/btnClear": {
+  "x": 232,
+  "y": 58,
+  "width": 84,
+  "height": 24
+ },
+ "p3Delivery/cpiVsPoints": {
+  "x": 12,
+  "y": 260,
+  "width": 408,
+  "height": 452
+ },
+ "p3Delivery/currencyNote": {
+  "x": 20,
+  "y": 62,
+  "width": 208,
+  "height": 18
+ },
+ "p3Delivery/evVsAc": {
+  "x": 956,
+  "y": 260,
+  "width": 312,
+  "height": 300
+ },
+ "p3Delivery/hdrTitle": {
+  "x": 12,
+  "y": 4,
+  "width": 312,
+  "height": 80
+ },
+ "p3Delivery/kpi1": {
+  "x": 12,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/kpi2": {
+  "x": 170,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/kpi3": {
+  "x": 328,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/kpi4": {
+  "x": 486,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/kpi5": {
+  "x": 644,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/kpi6": {
+  "x": 802,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/kpi7": {
+  "x": 960,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/kpi8": {
+  "x": 1118,
+  "y": 176,
+  "width": 150,
+  "height": 76
+ },
+ "p3Delivery/methodNote": {
+  "x": 956,
+  "y": 568,
+  "width": 312,
+  "height": 144
+ },
+ "p3Delivery/narrative": {
+  "x": 12,
+  "y": 92,
+  "width": 1256,
+  "height": 76
+ },
+ "p3Delivery/projectTable": {
+  "x": 428,
+  "y": 260,
+  "width": 520,
+  "height": 452
+ },
+ "p3Delivery/slCurrency": {
+  "x": 860,
+  "y": 4,
+  "width": 140,
+  "height": 80
+ },
+ "p3Delivery/slDepartment": {
+  "x": 682,
+  "y": 4,
+  "width": 170,
+  "height": 80
+ },
+ "p3Delivery/slFiscalYear": {
+  "x": 332,
+  "y": 4,
+  "width": 150,
+  "height": 80
+ },
+ "p3Delivery/slRateScenario": {
+  "x": 1008,
+  "y": 4,
+  "width": 132,
+  "height": 80
+ },
+ "p3Delivery/slRegion": {
+  "x": 490,
+  "y": 4,
+  "width": 184,
+  "height": 80
+ },
+ "p3Delivery/slScale": {
+  "x": 1148,
+  "y": 4,
+  "width": 120,
+  "height": 80
+ },
+ "p4DetailTooltip/ttHolder": {
+  "x": 0,
+  "y": 0,
+  "width": 320,
+  "height": 44
+ },
+ "p4DetailTooltip/ttTrend": {
+  "x": 0,
+  "y": 160,
+  "width": 320,
+  "height": 80
+ },
+ "p4DetailTooltip/ttVendors": {
+  "x": 0,
+  "y": 44,
+  "width": 320,
+  "height": 116
+ }
+}

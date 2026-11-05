@@ -1,0 +1,54 @@
+/// Disconnected selector table: when a variance counts as material. A department or category is flagged red/green only when its variance at budget FX breaches BOTH the % and the cGBP amount.
+table 'Variance Flag'
+	lineageTag: 9492aba4-f5da-4141-a295-13bbc87a5955
+
+	/// Threshold option shown in the slicer.
+	column Flag
+		dataType: string
+		lineageTag: 76846e35-b5ae-4fae-8c50-46761cccf02c
+		summarizeBy: none
+		sourceColumn: Flag
+		sortByColumn: Sort
+
+	/// Percentage threshold (of budget).
+	column 'Flag %'
+		dataType: double
+		isHidden
+		formatString: 0%
+		lineageTag: 5373d8c1-bfdf-4636-8933-957970a0f34c
+		summarizeBy: none
+		sourceColumn: Pct
+
+	/// Amount threshold in cGBP.
+	column 'Flag Amount'
+		dataType: double
+		isHidden
+		formatString: £#,0
+		lineageTag: db79792d-4223-4a7a-b23c-92bf2ea9b04f
+		summarizeBy: none
+		sourceColumn: Amount
+
+	column Sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fdcdec81-769b-468a-8792-eee88783f88f
+		summarizeBy: none
+		sourceColumn: Sort
+
+	partition 'Variance Flag' = m
+		mode: import
+		source =
+				let
+					Source = #table(
+						type table [Flag = text, Pct = number, Amount = number, Sort = Int64.Type],
+						{
+							{"Over 2% and £50K", 0.02, 50000, 1},
+							{"Over 1% and £25K", 0.01, 25000, 2},
+							{"Over 5% and £100K", 0.05, 100000, 3},
+							{"Over 2%, any amount", 0.02, 0, 4}
+						}
+					)
+				in
+					Source
+

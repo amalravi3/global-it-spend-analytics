@@ -1,0 +1,30 @@
+/// Disconnected selector table: show financial measures in consolidated GBP (cGBP) or in local currency. Local currency needs one currency in context, e.g. a single country selected.
+table 'Reporting Currency'
+	lineageTag: 404b7038-6ac8-43e5-87da-5b6c97675026
+
+	/// cGBP or Local currency.
+	column 'Currency View'
+		dataType: string
+		lineageTag: 022efba3-4b8e-4387-b856-e3f239c992d9
+		summarizeBy: none
+		sourceColumn: Currency View
+		sortByColumn: Sort
+
+	column Sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: a39abe42-1aa0-432b-85ee-a177682e83c1
+		summarizeBy: none
+		sourceColumn: Sort
+
+	partition 'Reporting Currency' = m
+		mode: import
+		source =
+				let
+					Source = #table(type table [Currency View = text, Sort = Int64.Type], {{"cGBP", 1}, {"Local currency", 2}})
+				in
+					Source
+
+	annotation PBI_ResultType = Table
+

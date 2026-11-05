@@ -1,0 +1,38 @@
+/// Calculation group: display units for money totals (Millions, Thousands, Units). It divides the value itself, because Power BI visuals ignore the scaling commas of format strings. Per-unit figures, percentages, ratios and text measures are never changed. The measure lists in the items must be updated when a money measure is added.
+table Scale
+	lineageTag: 653de947-6779-45c8-b30a-a348e5733ca4
+
+	calculationGroup
+		precedence: 1
+
+		/// Millions: money totals divided accordingly; per-FTE, per-point, per-user, ratios and text are left unchanged.
+		calculationItem Millions = VAR m = SELECTEDMEASURENAME() VAR lc = SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency" VAR isMoney = m IN { "Actual", "Budget", "Variance vs Budget", "Underlying Variance", "Actual PY", "YoY Change", "Outturn (Run Rate)", "Run Rate vs Budget", "Capitalised Project Spend", "Opex Impact", "Cloud Spend", "Cloud Budget", "IT Employees Underlying Variance", "IT Contractors Underlying Variance", "Project Actual Cost", "Earned Value", "Planned Value", "Cost Variance (EV - AC)", "Full-year Budget", "Outturn", "Outturn vs Budget", "FX Translation Impact", "Bridge Value", "Value at Stake", "Recoverable Value", "Realisable in 12 Months", "Budget at Completion", "Estimate at Completion", "Forecast Overrun", "Licence Cost", "Unused Licence Cost" } VAR isSmall = FALSE() RETURN IF(isMoney, SELECTEDMEASURE() / 1000000, IF(isSmall, SELECTEDMEASURE() / 1000, SELECTEDMEASURE()))
+
+			formatStringDefinition = VAR m = SELECTEDMEASURENAME() VAR lc = SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency" VAR isMoney = m IN { "Actual", "Budget", "Variance vs Budget", "Underlying Variance", "Actual PY", "YoY Change", "Outturn (Run Rate)", "Run Rate vs Budget", "Capitalised Project Spend", "Opex Impact", "Cloud Spend", "Cloud Budget", "IT Employees Underlying Variance", "IT Contractors Underlying Variance", "Project Actual Cost", "Earned Value", "Planned Value", "Cost Variance (EV - AC)", "Full-year Budget", "Outturn", "Outturn vs Budget", "FX Translation Impact", "Bridge Value", "Value at Stake", "Recoverable Value", "Realisable in 12 Months", "Budget at Completion", "Estimate at Completion", "Forecast Overrun", "Licence Cost", "Unused Licence Cost" } VAR isSmall = FALSE() VAR sym = IF(lc && NOT (m IN { "FX Translation Impact", "Bridge Value", "Value at Stake", "Recoverable Value", "Realisable in 12 Months", "Budget at Completion", "Estimate at Completion", "Forecast Overrun" }), SELECTEDVALUE(Entity[Currency Symbol], ""), "£") VAR num = IF(isMoney, "#,0.00""M""", "#,0""K""") RETURN IF(isMoney || isSmall, """" & sym & """" & num & ";-""" & sym & """" & num, SELECTEDMEASUREFORMATSTRING())
+
+		/// Thousands: money totals divided accordingly; per-FTE, per-point, per-user, ratios and text are left unchanged.
+		calculationItem Thousands = VAR m = SELECTEDMEASURENAME() VAR lc = SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency" VAR isMoney = m IN { "Actual", "Budget", "Variance vs Budget", "Underlying Variance", "Actual PY", "YoY Change", "Outturn (Run Rate)", "Run Rate vs Budget", "Capitalised Project Spend", "Opex Impact", "Cloud Spend", "Cloud Budget", "IT Employees Underlying Variance", "IT Contractors Underlying Variance", "Project Actual Cost", "Earned Value", "Planned Value", "Cost Variance (EV - AC)", "Full-year Budget", "Outturn", "Outturn vs Budget", "FX Translation Impact", "Bridge Value", "Value at Stake", "Recoverable Value", "Realisable in 12 Months", "Budget at Completion", "Estimate at Completion", "Forecast Overrun", "Licence Cost", "Unused Licence Cost" } VAR isSmall = FALSE() RETURN IF(isMoney, SELECTEDMEASURE() / 1000, IF(isSmall, SELECTEDMEASURE() / 1000, SELECTEDMEASURE()))
+
+			formatStringDefinition = VAR m = SELECTEDMEASURENAME() VAR lc = SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency" VAR isMoney = m IN { "Actual", "Budget", "Variance vs Budget", "Underlying Variance", "Actual PY", "YoY Change", "Outturn (Run Rate)", "Run Rate vs Budget", "Capitalised Project Spend", "Opex Impact", "Cloud Spend", "Cloud Budget", "IT Employees Underlying Variance", "IT Contractors Underlying Variance", "Project Actual Cost", "Earned Value", "Planned Value", "Cost Variance (EV - AC)", "Full-year Budget", "Outturn", "Outturn vs Budget", "FX Translation Impact", "Bridge Value", "Value at Stake", "Recoverable Value", "Realisable in 12 Months", "Budget at Completion", "Estimate at Completion", "Forecast Overrun", "Licence Cost", "Unused Licence Cost" } VAR isSmall = FALSE() VAR sym = IF(lc && NOT (m IN { "FX Translation Impact", "Bridge Value", "Value at Stake", "Recoverable Value", "Realisable in 12 Months", "Budget at Completion", "Estimate at Completion", "Forecast Overrun" }), SELECTEDVALUE(Entity[Currency Symbol], ""), "£") VAR num = IF(isMoney, "#,0""K""", "#,0""K""") RETURN IF(isMoney || isSmall, """" & sym & """" & num & ";-""" & sym & """" & num, SELECTEDMEASUREFORMATSTRING())
+
+		/// Units: values and formats unchanged.
+		calculationItem Units = SELECTEDMEASURE()
+
+	/// Millions, Thousands or Units.
+	column Scale
+		dataType: string
+		lineageTag: a5721ddd-e184-49f3-93b6-3c5591f8b2ce
+		summarizeBy: none
+		sourceColumn: Name
+		sortByColumn: Ordinal
+
+	column Ordinal
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 679c26c8-faa5-453e-a5d3-4931202121d2
+		summarizeBy: sum
+		sourceColumn: Ordinal
+
+	partition Scale = calculationGroup
+

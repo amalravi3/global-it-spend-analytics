@@ -1,0 +1,12 @@
+/// Regional managers see only the regions mapped to their sign-in in 'Region Security Map'. Every fact table is filtered through Entity (spend, budget, headcount, licences, delivery); FX rates and helper tables stay visible.
+role 'Regional Manager'
+	modelPermission: read
+
+	tablePermission Entity = [Region] IN CALCULATETABLE(VALUES('Region Security Map'[Region]), 'Region Security Map'[UserPrincipalName] = USERPRINCIPALNAME())
+
+	tablePermission 'Region Security Map' = [UserPrincipalName] = USERPRINCIPALNAME()
+
+	tablePermission 'Security Map' = [UserPrincipalName] = USERPRINCIPALNAME()
+
+	annotation PBI_Id = 2512c2a8fc9048d39e2ba1f4160bca07
+

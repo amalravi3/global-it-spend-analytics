@@ -1,0 +1,36 @@
+/// Suppliers that IT spend is paid to, including internal payroll for IT employees.
+table Vendor
+	lineageTag: e94f617c-8a3e-4b91-a0c0-43035a9ccaf3
+
+	column VendorKey
+		dataType: string
+		isHidden
+		lineageTag: 05270925-1b29-4d73-89a7-713d382cef84
+		summarizeBy: none
+		sourceColumn: VendorKey
+
+	/// Supplier name.
+	column Vendor
+		dataType: string
+		lineageTag: cb9d8337-f7a9-4249-a999-925e6f36fa11
+		summarizeBy: none
+		sourceColumn: Vendor
+
+	/// Supplier type, e.g. Software (SaaS), Cloud, Contractor agency, Delivery partner.
+	column 'Vendor Type'
+		dataType: string
+		lineageTag: 1e163ce6-b002-4244-95d9-db8f14477c96
+		summarizeBy: none
+		sourceColumn: VendorType
+
+	partition Vendor = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("dim_vendor.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"VendorKey", type text}, {"Vendor", type text}, {"VendorType", type text}})
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

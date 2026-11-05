@@ -1,0 +1,88 @@
+/// Monthly software licence position by product, entity and department: seats purchased (contracted for the fiscal year), active users and cost in local currency. Cost reconciles to Software Subscriptions in IT Spend.
+table Licence
+	lineageTag: 68018aff-b54f-4eeb-9cfa-a3e1bb32dd99
+
+	column Month
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: 6094c28c-dcc2-4fe1-bb2b-65bcd233a3ff
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EntityKey
+		dataType: string
+		isHidden
+		lineageTag: 0c5941f0-76f5-4771-9878-b612c4368877
+		summarizeBy: none
+		sourceColumn: EntityKey
+
+	column DepartmentKey
+		dataType: string
+		isHidden
+		lineageTag: 653d1161-5c26-4b7a-acfe-7ff6e557da99
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+	column ProductKey
+		dataType: string
+		isHidden
+		lineageTag: 7e7402c8-1634-41be-b584-d98282fa823b
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+	column Currency
+		dataType: string
+		isHidden
+		lineageTag: 7ab0be65-65b2-4d04-bacd-8bf63a7ccf25
+		summarizeBy: none
+		sourceColumn: Currency
+
+	/// Seats paid for in the month.
+	column 'Seats Purchased'
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 69a6bf80-4925-405a-b8c4-6fd3be570ab1
+		summarizeBy: none
+		sourceColumn: SeatsPurchased
+
+	/// Distinct users who were active in the month (at least one login or session).
+	column 'Active Users'
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: 1c9fc768-44cc-4c0b-9ee7-a92e9cd6016c
+		summarizeBy: none
+		sourceColumn: ActiveUsers
+
+	/// Licence cost for the month in local currency.
+	column 'Cost LC'
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: ef42bd8f-4a5a-4f36-ae8a-989967855fd0
+		summarizeBy: sum
+		sourceColumn: CostLC
+
+	column CurrencyMonthKey
+		dataType: string
+		isHidden
+		lineageTag: 6b10dda8-4d35-4db5-89a7-025d50cdceae
+		summarizeBy: none
+		sourceColumn: CurrencyMonthKey
+
+	partition Licence = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("fact_licence.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"Month", type date}, {"EntityKey", type text}, {"DepartmentKey", type text}, {"ProductKey", type text}, {"Currency", type text}, {"SeatsPurchased", Int64.Type}, {"ActiveUsers", Int64.Type}, {"CostLC", Currency.Type}}, "en-US"),
+					AddFxKey = Table.AddColumn(Typed, "CurrencyMonthKey", each [Currency] & "|" & Date.ToText([Month], [Format = "yyyy-MM", Culture = "en-US"]), type text)
+				in
+					AddFxKey
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,77 @@
+/// Approved IT budget in local currency, one row per month × entity × department × cost category × project. Coarser than actuals (no vendor). Translated to cGBP at the fiscal-year budget rate.
+table 'IT Budget'
+	lineageTag: e34c2a3b-7cb0-425b-a62f-6c1ad762b6ca
+
+	column Month
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: 5241e1db-a298-42ba-9310-311dc642ce15
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EntityKey
+		dataType: string
+		isHidden
+		lineageTag: 575320a8-9c57-4389-86c6-a735b1e5fb8e
+		summarizeBy: none
+		sourceColumn: EntityKey
+
+	column DepartmentKey
+		dataType: string
+		isHidden
+		lineageTag: 43bde96b-1e7b-4b66-9dc4-9ce01f351a62
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+	column CategoryKey
+		dataType: string
+		isHidden
+		lineageTag: 6176f5a0-30ff-47bb-9e79-0edc76586e29
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+	column ProjectKey
+		dataType: string
+		isHidden
+		lineageTag: 9814ce77-bd4e-4a82-a38f-4a060a593e0d
+		summarizeBy: none
+		sourceColumn: ProjectKey
+
+	column Currency
+		dataType: string
+		isHidden
+		lineageTag: b4d7f589-c126-41d4-8b34-2174cd15494c
+		summarizeBy: none
+		sourceColumn: Currency
+
+	/// Budget amount in local currency.
+	column 'Budget LC'
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: ec882bba-c29b-4acf-8bfe-d8f78672d0c4
+		summarizeBy: sum
+		sourceColumn: BudgetLC
+
+	column CurrencyMonthKey
+		dataType: string
+		isHidden
+		lineageTag: 46b673f4-aea3-4565-b017-ae10d9f5b5f0
+		summarizeBy: none
+		sourceColumn: CurrencyMonthKey
+
+	partition 'IT Budget' = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("fact_it_budget.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"Month", type date}, {"EntityKey", type text}, {"DepartmentKey", type text}, {"CategoryKey", type text}, {"ProjectKey", type text}, {"Currency", type text}, {"BudgetLC", Currency.Type}}, "en-US"),
+					AddFxKey = Table.AddColumn(Typed, "CurrencyMonthKey", each [Currency] & "|" & Date.ToText([Month], [Format = "yyyy-MM", Culture = "en-US"]), type text)
+				in
+					AddFxKey
+
+	annotation PBI_ResultType = Table
+

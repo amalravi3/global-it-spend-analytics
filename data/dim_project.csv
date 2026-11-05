@@ -1,0 +1,8 @@
+ProjectKey,Project,ProjectEntity,SponsorDepartment,DeliveryPartner,StartMonth,PlannedEndMonth,Status,BudgetAtCompletionGBP,ProjectShort
+P000,Run costs (no project),,,,,,n/a,,Run costs
+P001,Customer Portal Rebuild,United States - New York,Customer Service,Bluefield Digital,2024-07-01,2026-06-01,In flight,4000000,Customer Portal
+P002,S/4HANA Finance Upgrade,UK - London (Group HQ),Finance,Northbridge Consulting,2024-04-01,2025-12-01,Closed,3500000,S/4HANA
+P003,Data Platform Modernisation,India - Bengaluru,Product & Technology,Northbridge Consulting,2024-10-01,2026-09-01,In flight,2500000,Data Platform
+P004,Workday HR Rollout - Europe,Germany - Frankfurt,Human Resources,Northbridge Consulting,2024-04-01,2025-03-01,Closed,1200000,Workday HR
+P005,Zero Trust Security Programme,UK - London (Group HQ),Product & Technology,Bluefield Digital,2025-01-01,2026-03-01,Closed,1800000,Zero Trust
+P006,Warehouse Automation,Singapore,Operations,Bluefield Digital,2025-06-01,2026-05-01,In flight,1500000,Warehouse

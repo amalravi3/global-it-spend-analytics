@@ -1,0 +1,41 @@
+/// Planning assumptions and illustrative benchmarks used by measures. Values are assumptions for this exercise, not sourced industry data: replace them with a sourced benchmark before using the figures externally.
+table Assumption
+	lineageTag: 85c8307b-8c30-4f22-a7c1-10550ae0e1e8
+
+	/// Assumption name.
+	column Assumption
+		dataType: string
+		lineageTag: 43607ee8-a295-4bd8-82ba-4195b6292b3f
+		summarizeBy: none
+		sourceColumn: Assumption
+
+	/// Value (a ratio or an amount in GBP).
+	column Value
+		dataType: double
+		lineageTag: 1c58a6ad-2016-4bb4-9e0d-c7cb2b27dd19
+		summarizeBy: none
+		sourceColumn: Value
+
+	/// What the value means and where it is used.
+	column Note
+		dataType: string
+		lineageTag: eb37c29f-2f48-4903-8b61-ee03155fbdfa
+		summarizeBy: none
+		sourceColumn: Note
+
+	partition Assumption = m
+		mode: import
+		source =
+				let
+					Source = #table(
+						type table [Assumption = text, Value = number, Note = text],
+						{
+							{"Benchmark IT spend per FTE (low)", 7000, "Illustrative peer range, GBP per employee per year (assumption)"},
+							{"Benchmark IT spend per FTE (high)", 11000, "Illustrative peer range, GBP per employee per year (assumption)"},
+							{"Change share target", 0.3, "Target share of IT spend on change (the common 70/30 run/change rule of thumb)"},
+							{"Project capitalisation rate", 0.6, "Share of technology project spend assumed capitalisable (capex); the rest is opex"}
+						}
+					)
+				in
+					Source
+

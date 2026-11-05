@@ -1,0 +1,84 @@
+// Validation check: run in Power BI Desktop > DAX query view and compare with validation/expected_kpis.csv
+// (produced independently from the CSVs by scripts/reconcile.py). Results should agree, rounding aside.
+
+DEFINE
+    VAR _cGBP = TREATAS({ "cGBP" }, 'Reporting Currency'[Currency View])
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Date'[Fiscal Year],
+    _cGBP,
+    "Actual (cGBP)", [Actual],
+    "Budget (cGBP)", [Budget],
+    "Variance vs Budget (cGBP)", [Variance vs Budget],
+    "Underlying Variance (cGBP)", [Underlying Variance],
+    "FX Translation Impact (cGBP)", [FX Translation Impact],
+    "Average FTE", [Average FTE],
+    "IT Spend per FTE (cGBP, annualised)", [IT Spend per FTE],
+    "Licence Cost (cGBP)", [Licence Cost],
+    "Unused Licence Cost (cGBP)", [Unused Licence Cost],
+    "Licence Utilisation %", [Licence Utilisation %],
+    "Project Actual Cost (cGBP)", [Project Actual Cost],
+    "Earned Value (cGBP)", [Earned Value],
+    "CPI", [CPI],
+    "SPI", [SPI],
+    "Story Points Delivered", [Story Points Delivered]
+)
+
+// Currency translation check: each currency's local total ÷ cGBP total gives its implied average rate.
+// Local currency must equal the raw CSV sum (validation/expected_totals.csv, ActualLC).
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Date'[Fiscal Year],
+    Entity[Currency],
+    "Actual LC (local currency)", CALCULATE([Actual], 'Reporting Currency'[Currency View] = "Local currency"),
+    "Actual cGBP", CALCULATE([Actual], 'Reporting Currency'[Currency View] = "cGBP")
+)
+
+// Executive action list: value at stake per action (compare with the "Value at Stake - A1..A4" rows).
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Date'[Fiscal Year],
+    'Recommended Action'[Action],
+    "Value at Stake", [Value at Stake]
+)
+
+// Bridge integrity: the waterfall steps must add up to the reported cGBP variance (difference = 0).
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Date'[Fiscal Year],
+    "Bridge total", [Bridge Value],
+    "Reported variance", CALCULATE([Variance vs Budget], 'Reporting Currency'[Currency View] = "cGBP"),
+    "Difference", [Bridge Value] - CALCULATE([Variance vs Budget], 'Reporting Currency'[Currency View] = "cGBP")
+)
+
+// FX rate scenarios: actuals re-translated at each scenario's rate; budget stays at plan rates.
+// Compare with the "Scenario <name> - ..." rows. Actual must equal [Actual] above; Plan variance must equal the underlying variance.
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Date'[Fiscal Year],
+    'Rate Scenario'[Scenario],
+    TREATAS({ "cGBP" }, 'Reporting Currency'[Currency View]),
+    "Actual (cGBP)", [Actual],
+    "Variance vs Budget (cGBP)", [Variance vs Budget],
+    "YoY Change %", [YoY Change %]
+)
+
+// Round 2: Run vs Change, year-end outturn, estimate at completion.
+// Change Spend %, Budget at Completion, Estimate at Completion and Forecast Overrun must match expected_kpis.csv.
+// Outturn for a full fiscal year must equal Actual (nothing left to forecast).
+EVALUATE
+SUMMARIZECOLUMNS(
+    'Date'[Fiscal Year],
+    TREATAS({ "cGBP" }, 'Reporting Currency'[Currency View]),
+    "Change Spend %", [Change Spend %],
+    "Outturn - Actual", [Outturn] - [Actual],
+    "Budget at Completion", [Budget at Completion],
+    "Estimate at Completion", [Estimate at Completion],
+    "Forecast Overrun", [Forecast Overrun]
+)
+
+// Row-level security: run in DAX query view after Modeling > View as > Other user + role "Department Budget Holder",
+// e.g. ops.director@example.com. Only Operations should return rows, and totals should equal the Operations row
+// of the unrestricted model.
+EVALUATE
+SUMMARIZECOLUMNS(Department[Department], "Actual", [Actual], "Budget", [Budget])

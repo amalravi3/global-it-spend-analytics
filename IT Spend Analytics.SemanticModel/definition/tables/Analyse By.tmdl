@@ -1,0 +1,50 @@
+/// Field parameter: the dimension a visual breaks spend down by. Budget is held by department, entity, category and project, not by vendor, so budget and variance measures are blank when analysing by vendor.
+table 'Analyse By'
+	lineageTag: 0a0d492d-a9d6-46f5-abe8-aba092ea0679
+
+	column 'Analyse By Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 53918c67-cf36-4956-9599-fca3d9658423
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+	column 'Analyse By Fields'
+		dataType: string
+		isHidden
+		lineageTag: 2f627966-3bb2-46ad-a0c6-df84bc94704a
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Analyse By Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+	/// Dimension to analyse by: Department, Region, Country, Category, Run/Change (Run - Technology, Run - People, Change), Vendor or Project.
+	column 'Analyse By'
+		dataType: string
+		lineageTag: 78504d53-5ae6-4524-b9d0-a335acccd62a
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Analyse By Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Analyse By Fields'
+
+	partition 'Analyse By' = calculated
+		mode: import
+		source =
+				{
+					("Department", NAMEOF(Department[Department]), 0),
+					("Region", NAMEOF(Entity[Region]), 1),
+					("Country", NAMEOF(Entity[Country]), 2),
+					("Category", NAMEOF('Cost Category'[Category]), 3),
+					("Run/Change", NAMEOF('Cost Category'[Category Group]), 4),
+					("Vendor", NAMEOF(Vendor[Vendor]), 5),
+					("Project", NAMEOF(Project[Project]), 6)
+				}
+

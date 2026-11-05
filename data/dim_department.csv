@@ -1,0 +1,8 @@
+DepartmentKey,Department,DepartmentGroup,SortOrder,BudgetHolder
+D01,Finance,Corporate functions,1,Finance Director
+D02,Human Resources,Corporate functions,2,HR Director
+D03,Legal & Compliance,Corporate functions,3,General Counsel
+D04,Sales & Marketing,Customer-facing,4,Chief Commercial Officer
+D05,Customer Service,Customer-facing,5,Head of Customer Service
+D06,Operations,Operations & Technology,6,Operations Director
+D07,Product & Technology,Operations & Technology,7,Chief Product Officer

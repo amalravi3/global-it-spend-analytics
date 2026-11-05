@@ -1,0 +1,106 @@
+/// Calendar (one row per day) for UK fiscal years April to March, FY2024/25 to FY2025/26. Marked as the model's date table. All facts are monthly and join on the first day of the month.
+table Date
+	lineageTag: 6c91fe7a-dd58-43ce-acb9-c7f26db2e0fd
+	dataCategory: Time
+
+	/// Calendar date. Facts join on the first day of each month.
+	column Date
+		dataType: dateTime
+		isKey
+		formatString: dd mmm yyyy
+		lineageTag: a59bd618-d0f5-4b70-9377-57586a1455f8
+		summarizeBy: none
+		sourceColumn: Date
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// First day of the calendar month. Use for monthly trends.
+	column 'Month Start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 582ceb3b-b086-443f-8840-9f7ae8afd418
+		summarizeBy: none
+		sourceColumn: Month Start
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Numeric year-month key (yyyymm), used to sort Month.
+	column 'Month Key'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 80db2890-3c08-48fa-a1f7-c339583e198c
+		summarizeBy: none
+		sourceColumn: Month Key
+
+	/// Month label, e.g. Apr-25.
+	column Month
+		dataType: string
+		lineageTag: 24638a83-c33c-4bd0-87d3-282b66fa5f63
+		summarizeBy: none
+		sourceColumn: Month
+		sortByColumn: 'Month Key'
+
+	/// Calendar year in which the fiscal year starts (FY2025/26 = 2025).
+	column 'Fiscal Year Start'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 9c194756-9370-41d9-90af-96f380c25b6e
+		summarizeBy: none
+		sourceColumn: Fiscal Year Start
+
+	/// UK fiscal year running April to March, e.g. FY2025/26 = Apr-2025 to Mar-2026.
+	column 'Fiscal Year'
+		dataType: string
+		lineageTag: 05ad835b-9a08-4732-8bd4-a1029683cb7f
+		summarizeBy: none
+		sourceColumn: Fiscal Year
+		sortByColumn: 'Fiscal Year Start'
+
+	/// Month number within the fiscal year (April = 1, March = 12).
+	column 'Fiscal Month No'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0fb14535-9a4f-4849-a1db-0c0c7233453e
+		summarizeBy: none
+		sourceColumn: Fiscal Month No
+
+	/// Month name (Apr, May, ...) sorted in fiscal order.
+	column 'Fiscal Month'
+		dataType: string
+		lineageTag: 66e1a2cc-5e0e-42a7-9cf0-a48680e44eb9
+		summarizeBy: none
+		sourceColumn: Fiscal Month
+		sortByColumn: 'Fiscal Month No'
+
+	/// Fiscal quarter (Q1 = Apr to Jun).
+	column 'Fiscal Quarter'
+		dataType: string
+		lineageTag: 078d616b-bd43-4c56-97da-91887021115d
+		summarizeBy: none
+		sourceColumn: Fiscal Quarter
+
+	partition Date = m
+		mode: import
+		source =
+				let
+					StartDate = #date(2024, 4, 1),
+					EndDate = #date(2026, 3, 31),
+					DayCount = Duration.Days(EndDate - StartDate) + 1,
+					Dates = List.Dates(StartDate, DayCount, #duration(1, 0, 0, 0)),
+					Base = Table.FromList(Dates, Splitter.SplitByNothing(), type table [Date = date]),
+					AddMonthStart = Table.AddColumn(Base, "Month Start", each Date.StartOfMonth([Date]), type date),
+					AddMonthKey = Table.AddColumn(AddMonthStart, "Month Key", each Date.Year([Date]) * 100 + Date.Month([Date]), Int64.Type),
+					AddMonth = Table.AddColumn(AddMonthKey, "Month", each Date.ToText([Date], [Format = "MMM-yy", Culture = "en-US"]), type text),
+					AddFYStart = Table.AddColumn(AddMonth, "Fiscal Year Start", each if Date.Month([Date]) >= 4 then Date.Year([Date]) else Date.Year([Date]) - 1, Int64.Type),
+					AddFY = Table.AddColumn(AddFYStart, "Fiscal Year", each "FY" & Text.From([Fiscal Year Start]) & "/" & Text.End(Text.From([Fiscal Year Start] + 1), 2), type text),
+					AddFMNo = Table.AddColumn(AddFY, "Fiscal Month No", each Number.Mod(Date.Month([Date]) + 8, 12) + 1, Int64.Type),
+					AddFM = Table.AddColumn(AddFMNo, "Fiscal Month", each Date.ToText([Date], [Format = "MMM", Culture = "en-US"]), type text),
+					AddFQ = Table.AddColumn(AddFM, "Fiscal Quarter", each "Q" & Text.From(Number.IntegerDivide([Fiscal Month No] - 1, 3) + 1), type text)
+				in
+					AddFQ
+
+	annotation PBI_ResultType = Table
+

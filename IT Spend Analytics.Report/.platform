@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "IT Spend Analytics"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "921a6aff-3f45-4bcd-89b5-25eeb331bfdd"
+  }
+}

@@ -1,0 +1,8 @@
+EntityKey,Entity,Country,Region,Currency,CurrencyName,CurrencySymbol
+UK01,UK - London (Group HQ),United Kingdom,UK & Ireland,GBP,Pound sterling,£
+DE01,Germany - Frankfurt,Germany,Europe,EUR,Euro,€
+FR01,France - Paris,France,Europe,EUR,Euro,€
+US01,United States - New York,United States,Americas,USD,US dollar,$
+IN01,India - Bengaluru,India,APAC,INR,Indian rupee,₹
+SG01,Singapore,Singapore,APAC,SGD,Singapore dollar,S$
+JP01,Japan - Tokyo,Japan,APAC,JPY,Japanese yen,¥

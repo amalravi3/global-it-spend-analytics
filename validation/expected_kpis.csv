@@ -1,0 +1,83 @@
+FiscalYear,Measure,Expected
+FY2024/25,Actual (cGBP),55511010.8664
+FY2024/25,Budget (cGBP),55995687.3056
+FY2024/25,Variance vs Budget (cGBP),-484676.4392
+FY2024/25,Underlying Variance (cGBP),200803.9234
+FY2024/25,FX Translation Impact (cGBP),-685480.3625
+FY2024/25,Average FTE,6586.2083
+FY2024/25,"IT Spend per FTE (cGBP, annualised)",8428.3715
+FY2024/25,Licence Cost (cGBP),7117816.6424
+FY2024/25,Unused Licence Cost (cGBP),1414532.5966
+FY2024/25,Licence Utilisation %,0.8069
+FY2024/25,Project Actual Cost (cGBP),5505233.1651
+FY2024/25,Earned Value (cGBP),5147607.8038
+FY2024/25,CPI,0.935
+FY2024/25,SPI,0.9738
+FY2024/25,Story Points Delivered,2226.0
+FY2024/25,Value at Stake - A1 licences,1414532.5966
+FY2024/25,Value at Stake - A2 cloud,0.0
+FY2024/25,Value at Stake - A3 contractors,0.0
+FY2024/25,Value at Stake - A4 projects,427680.1113
+FY2024/25,Value at Stake - total,1842212.7078
+FY2024/25,Change Spend %,0.0992
+FY2024/25,Recoverable Value,955639.5858
+FY2024/25,Realisable in 12 Months,106920.0278
+FY2024/25,Budget at Completion,13000000.0
+FY2024/25,Estimate at Completion,14186307.3645
+FY2024/25,Forecast Overrun,1186307.3645
+FY2024/25,Forecast Overrun - P001,1129375.1807
+FY2024/25,Forecast Overrun - P002,-84171.8732
+FY2024/25,Forecast Overrun - P003,285064.8522
+FY2024/25,Forecast Overrun - P004,3879.6803
+FY2024/25,Forecast Overrun - P005,-147840.4756
+FY2024/25,Scenario Actual - Actual (cGBP),55511010.8664
+FY2024/25,Scenario Actual - Variance vs Budget (cGBP),-484676.4392
+FY2024/25,Scenario Plan - Actual (cGBP),56196491.2289
+FY2024/25,Scenario Plan - Variance vs Budget (cGBP),200803.9234
+FY2024/25,Scenario Prior year - Actual (cGBP),55511010.8664
+FY2024/25,Scenario Prior year - Variance vs Budget (cGBP),-484676.4392
+FY2024/25,Scenario Estimate - Actual (cGBP),54063846.9389
+FY2024/25,Scenario Estimate - Variance vs Budget (cGBP),-1931840.3667
+FY2025/26,Actual (cGBP),61949040.2847
+FY2025/26,Budget (cGBP),62046587.2937
+FY2025/26,Variance vs Budget (cGBP),-97547.009
+FY2025/26,Underlying Variance (cGBP),1538428.7236
+FY2025/26,FX Translation Impact (cGBP),-1635975.7326
+FY2025/26,Average FTE,6903.3
+FY2025/26,"IT Spend per FTE (cGBP, annualised)",8973.8299
+FY2025/26,Licence Cost (cGBP),7509645.0208
+FY2025/26,Unused Licence Cost (cGBP),1555751.9104
+FY2025/26,Licence Utilisation %,0.7849
+FY2025/26,Project Actual Cost (cGBP),8043271.568
+FY2025/26,Earned Value (cGBP),7446974.8674
+FY2025/26,CPI,0.9259
+FY2025/26,SPI,0.9477
+FY2025/26,Story Points Delivered,3711.0
+FY2025/26,Value at Stake - A1 licences,1555751.9104
+FY2025/26,Value at Stake - A2 cloud,725967.2286
+FY2025/26,Value at Stake - A3 contractors,565323.395
+FY2025/26,Value at Stake - A4 projects,717779.9706
+FY2025/26,Value at Stake - total,3564822.5046
+FY2025/26,Change Spend %,0.1298
+FY2025/26,Recoverable Value,1645476.7717
+FY2025/26,Realisable in 12 Months,1488081.5396
+FY2025/26,Budget at Completion,13300000.0
+FY2025/26,Estimate at Completion,14493121.3683
+FY2025/26,Forecast Overrun,1193121.3683
+FY2025/26,Forecast Overrun - P001,1044478.2263
+FY2025/26,Forecast Overrun - P002,-118018.9
+FY2025/26,Forecast Overrun - P003,315064.8034
+FY2025/26,Forecast Overrun - P005,-96824.82
+FY2025/26,Forecast Overrun - P006,48422.0586
+FY2025/26,Scenario Actual - Actual (cGBP),61949040.2847
+FY2025/26,Scenario Actual - Variance vs Budget (cGBP),-97547.009
+FY2025/26,Scenario Actual - YoY Change %,0.116
+FY2025/26,Scenario Plan - Actual (cGBP),63585016.0174
+FY2025/26,Scenario Plan - Variance vs Budget (cGBP),1538428.7236
+FY2025/26,Scenario Plan - YoY Change %,0.1315
+FY2025/26,Scenario Prior year - Actual (cGBP),63600168.3688
+FY2025/26,Scenario Prior year - Variance vs Budget (cGBP),1553581.0751
+FY2025/26,Scenario Prior year - YoY Change %,0.1457
+FY2025/26,Scenario Estimate - Actual (cGBP),61631739.135
+FY2025/26,Scenario Estimate - Variance vs Budget (cGBP),-414848.1587
+FY2025/26,Scenario Estimate - YoY Change %,0.14

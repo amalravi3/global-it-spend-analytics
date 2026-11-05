@@ -1,0 +1,12 @@
+/// Budget holders see only the departments mapped to their sign-in in 'Security Map'. Every fact table is filtered through Department; FX rates and helper tables stay visible.
+role 'Department Budget Holder'
+	modelPermission: read
+
+	tablePermission Department = [Department] IN CALCULATETABLE(VALUES('Security Map'[Department]), 'Security Map'[UserPrincipalName] = USERPRINCIPALNAME())
+
+	tablePermission 'Security Map' = [UserPrincipalName] = USERPRINCIPALNAME()
+
+	tablePermission 'Region Security Map' = [UserPrincipalName] = USERPRINCIPALNAME()
+
+	annotation PBI_Id = 7f374f8948f844969235c42b764b9e6e
+

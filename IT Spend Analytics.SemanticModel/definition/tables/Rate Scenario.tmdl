@@ -1,0 +1,45 @@
+/// Disconnected selector table: which exchange rate translates actual spend into cGBP. Actual (month-end, the default) is the reported view; Plan, Prior year and Estimate are constant-currency views. Budget always stays at the Plan rate it was approved at.
+table 'Rate Scenario'
+	lineageTag: 107aa0cb-87b2-455d-8d6c-2601e5534def
+
+	/// Actual, Plan, Prior year or Estimate.
+	column Scenario
+		dataType: string
+		lineageTag: 3f69acb2-c285-4e86-bf9f-d72637a10e5c
+		summarizeBy: none
+		sourceColumn: Scenario
+		sortByColumn: Sort
+
+	column Sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 94d91983-59d9-4a94-9a9a-9b095d263fb8
+		summarizeBy: none
+		sourceColumn: Sort
+
+	/// Which rate the scenario uses, in words.
+	column 'Rate Basis'
+		dataType: string
+		lineageTag: 3b0eeecc-7f0f-4a62-9132-71ac7a7ecaf6
+		summarizeBy: none
+		sourceColumn: Rate Basis
+
+	partition 'Rate Scenario' = m
+		mode: import
+		source =
+				let
+					Source = #table(
+						type table [Scenario = text, Sort = Int64.Type, Rate Basis = text],
+						{
+							{"Actual", 1, "month-end rates"},
+							{"Plan", 2, "plan rates"},
+							{"Prior year", 3, "prior-year rates"},
+							{"Estimate", 4, "latest rate"}
+						}
+					)
+				in
+					Source
+
+	annotation PBI_ResultType = Table
+

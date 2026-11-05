@@ -1,0 +1,98 @@
+PREP DATA FOR AI (COPILOT)
+==========================
+
+ALREADY IN THE MODEL
+--------------------
+
+- Every table, column and measure has a business description, which Copilot reads.
+- Technical keys, local-currency and cGBP building blocks, helper measures and both security mapping tables are hidden.
+- Names are business-friendly and measures are grouped in display folders (1. Spend vs Budget … 6. Executive).
+- Implicit measures are disabled, so Copilot has to use the governed measures.
+- Q&A is enabled on the semantic model (definition.pbism → settings.qnaEnabled = true), a prerequisite for Copilot.
+- Business synonyms are in the linguistic schema (culture en-GB), for example shelfware → Unused Licence Cost,
+  spend per employee → IT Spend per FTE, constant currency variance → Underlying Variance,
+  year-end forecast → Outturn, supplier → Vendor.
+
+READY TO APPLY ONCE COPILOT IS AVAILABLE
+----------------------------------------
+
+The three settings below need Prep data for AI, which requires signing in to a Copilot-enabled
+organisational tenant (Fabric or Premium capacity). This build was made without one, so they are drafted here,
+ready to apply in Desktop (Home → Prep data for AI, about 10 minutes). They are saved on the semantic model
+(the PBIP Copilot folder), not on the report.
+
+1. Simplify the data schema
+---------------------------
+
+Keep:
+
+  Table  |  Fields
+  _Measures  |  All visible measures (folders 1 to 6)
+  Date  |  Fiscal Year, Fiscal Quarter, Fiscal Month, Month
+  Entity  |  Region, Country, Entity, Currency
+  Department  |  Department, Department Group
+  Cost Category  |  Category, Category Group
+  Vendor  |  Vendor, Vendor Type
+  Product  |  Product, Next Renewal Date
+  Project  |  Project, Sponsor Department, Status, Delivery Partner
+  Recommended Action  |  Action, Owner
+  Reporting Currency  |  Currency View
+  Rate Scenario  |  Scenario
+
+Clear: Analyse By, Show (field parameters), Scale (display units), Variance Flag, Bridge Step,
+FX Rate, Assumption, Security Map, Region Security Map. These drive report controls or security, not
+business questions.
+
+2. AI instructions (paste as-is)
+--------------------------------
+
+----------------------------------------------------------------------
+This model reports IT spend for a global organisation. The main user is the IT Finance Business Partner to the CIO.
+
+Periods
+- Fiscal years are UK fiscal years, April to March (FY2025/26 = April 2025 to March 2026). Data runs to March 2026. When no period is given, use FY2025/26.
+
+Currency
+- Money is in consolidated GBP (cGBP) unless the user asks for local currency. Actuals are translated at month-end rates; budget at the fiscal-year budget rate.
+- Local currency only makes sense for one country at a time. If the user asks for local currency across several countries, answer in cGBP and say why.
+- "Constant currency" or "at budget rates": use [Underlying Variance] for budget comparisons and [YoY Change % Constant FX] for growth. "At today's rates" means the Estimate rate scenario.
+
+Budget and variance
+- Positive variance = overspend (unfavourable). "Over budget" means Actual > Budget.
+- When asked whether IT is on budget, give the reported variance [Variance vs Budget], the underlying variance at budget exchange rates [Underlying Variance], and the FX effect [FX Translation Impact], and say which one reflects management performance (underlying).
+- For growth, give both [YoY Change %] (reported) and [YoY Change % Constant FX].
+- Budget is not held by vendor: do not report budget or variance by vendor.
+
+Efficiency
+- "Spend per employee" is [IT Spend per FTE]: annualised IT spend per business FTE. Compare it with the benchmark band (£7,000 to £11,000 per FTE). Never sum FTE across months.
+- "Shelfware", "unused" or "wasted" licences is [Unused Licence Cost]; utilisation is [Licence Utilisation %]. The best time to cut seats is the product's next renewal date.
+- For delivery efficiency use CPI (earned value ÷ actual cost) and SPI (earned value ÷ planned value). CPI below 1 means over budget for the work done. Do not present cost per story point as an efficiency measure: story points are team-relative estimates and not comparable across teams.
+- Exclude the project "Run costs (no project)" from project questions.
+
+Actions
+- "Where can we save" or "where should we act": use [Value at Stake], [Recoverable Value] and [Realisable in 12 Months] by Recommended Action, with the owner.
+----------------------------------------------------------------------
+
+3. Verified answers
+-------------------
+
+Select each visual, then … → Set verified answer, and add the trigger phrases.
+
+  Page  |  Visual  |  Trigger phrases
+  1. Overview  |  KPI tile Variance at budget FX  |  Are we on budget? · Is IT over budget? · What is the underlying variance?
+  1. Overview  |  Budget to actual bridge  |  What is driving the variance? · Why are we over budget? · What is the FX impact?
+  1. Overview  |  Spend vs budget by Department  |  Which department is over budget? · Spend vs budget by department
+  1. Overview  |  Forecast year-end variance by month  |  Where will we land this year? · What is the year-end forecast?
+  2. Spend & savings  |  Value at stake by action  |  Where can we save money? · What actions should we take? · How much can we recover?
+  2. Spend & savings  |  Licence utilisation by product  |  Where are we wasting money on licences? · Which licences are unused? · What is shelfware?
+  2. Spend & savings  |  Staff vs contractor variance by region  |  Why are contractors over budget? · Are we backfilling vacancies with contractors?
+  3. Delivery  |  Project scorecard  |  Which projects are over-running? · Which project has the worst CPI? · What is the forecast overrun?
+  3. Delivery  |  CPI vs cost per story point by project  |  Is cost per story point a good measure? · Which project is the most efficient?
+
+4. Test, then save
+------------------
+
+Open the Copilot pane in Desktop and ask the trigger questions plus a few variations (for example "How much
+is spent on shelfware in APAC?"). Check How Copilot arrived at this for the measures used. Save the
+project. After publishing, mark the semantic model Approved for Copilot in the Power BI service
+(semantic model settings).

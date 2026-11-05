@@ -1,0 +1,75 @@
+/// Disconnected list of recommended management actions for the executive summary, each scored by the money at stake in the selected period (see Value at Stake).
+table 'Recommended Action'
+	lineageTag: 7a1a0bed-03df-42da-a02a-7d23d70bf54c
+
+	column ActionKey
+		dataType: string
+		isHidden
+		lineageTag: 95eb8859-6512-418e-8531-74d7188b0bd1
+		summarizeBy: none
+		sourceColumn: ActionKey
+
+	/// Recommended management action.
+	column Action
+		dataType: string
+		lineageTag: ed9b8b11-357e-4841-820a-1c84afff06e9
+		summarizeBy: none
+		sourceColumn: Action
+		sortByColumn: Sort
+
+	/// Accountable owner for the action.
+	column Owner
+		dataType: string
+		lineageTag: d7da403b-4715-4984-9a8c-6ec5730b1bef
+		summarizeBy: none
+		sourceColumn: Owner
+
+	/// Report page and visual that holds the evidence.
+	column Evidence
+		dataType: string
+		lineageTag: a8097f20-f17b-4f66-a75c-f8885471dd27
+		summarizeBy: none
+		sourceColumn: Evidence
+
+	column Sort
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: fa3bf12a-bed1-4871-87dd-34cc4ba5d5b3
+		summarizeBy: none
+		sourceColumn: Sort
+
+	/// Assumed share of the value at stake that the action can actually recover (planning assumption, not data).
+	column 'Recovery %'
+		dataType: double
+		formatString: 0%
+		lineageTag: 153072f9-1e0c-4d08-8731-99d2c805f9f6
+		summarizeBy: none
+		sourceColumn: RecoveryPct
+
+	/// Assumed share of the recoverable value that lands within 12 months (licences use renewal dates instead).
+	column 'Within 12 Months %'
+		dataType: double
+		formatString: 0%
+		lineageTag: 242d61b9-16f4-4e61-9cce-7eef8f9a335d
+		summarizeBy: none
+		sourceColumn: Within12mPct
+
+	partition 'Recommended Action' = m
+		mode: import
+		source =
+				let
+					Source = #table(
+						type table [ActionKey = text, Action = text, Owner = text, Evidence = text, Sort = Int64.Type, RecoveryPct = number, Within12mPct = number],
+						{
+							{"A1", "Right-size licences", "Procurement", "Page 2: unused licence cost", 1, 0.6, 1},
+							{"A2", "FinOps controls on cloud", "Cloud lead", "Page 2: cloud vs budget", 2, 0.5, 0.8},
+							{"A3", "Replace contractors", "CIO and HR", "Page 2: vacancy backfill", 3, 0.3, 0.5},
+							{"A4", "Recover project overruns", "PMO", "Page 3: project scorecard", 4, 0.25, 1}
+						}
+					)
+				in
+					Source
+
+	annotation PBI_ResultType = Table
+

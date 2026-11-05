@@ -1,0 +1,19 @@
+/// Folder that contains the synthetic CSV files (the repo's \data folder). Change via Transform data > Edit parameters.
+expression DataFolder = "D:\PowerBI\New folder\data\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: c4fa9f58-8c18-49a8-8396-c09f957f4c82
+
+	annotation PBI_ResultType = Text
+
+/// Loads one CSV file from DataFolder as UTF-8 and promotes the header row. Typing is applied in each table's query.
+expression fnLoadCsv =
+		(FileName as text) as table =>
+		let
+			Folder = if Text.EndsWith(DataFolder, "\") then DataFolder else DataFolder & "\",
+			Source = Csv.Document(File.Contents(Folder & FileName), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+			Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true])
+		in
+			Promoted
+	lineageTag: 0fa0e6bf-5629-4c40-8044-1f32f68a8c02
+
+	annotation PBI_ResultType = Function
+

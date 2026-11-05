@@ -1,0 +1,50 @@
+/// Field parameter: the measure a visual shows. Variances are at budget exchange rates (constant currency), so they show what managers control.
+table Show
+	lineageTag: 543106cb-af8b-4b12-b7b0-334cb50cd603
+
+	column 'Show Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 524ad453-3b29-41aa-b3ea-fd527949f446
+		summarizeBy: sum
+		sourceColumn: [Value3]
+
+	column 'Show Fields'
+		dataType: string
+		isHidden
+		lineageTag: c0984bb1-3c9f-4684-9f7f-7c269175a7c5
+		summarizeBy: none
+		sourceColumn: [Value2]
+		sortByColumn: 'Show Order'
+
+		extendedProperty ParameterMetadata =
+				{
+				  "version": 3,
+				  "kind": 2
+				}
+
+	/// Measure to show: actual spend, variance at budget FX (£ or %), FX translation impact, YoY change at constant FX, IT spend per FTE, or the share of spend on change (projects).
+	column Show
+		dataType: string
+		lineageTag: 45e890b3-125d-4ab9-b1f5-27f0f71bb314
+		summarizeBy: none
+		sourceColumn: [Value1]
+		sortByColumn: 'Show Order'
+
+		relatedColumnDetails
+			groupByColumn: 'Show Fields'
+
+	partition Show = calculated
+		mode: import
+		source =
+				{
+					("Actual", NAMEOF('_Measures'[Actual]), 0),
+					("Variance", NAMEOF('_Measures'[Underlying Variance]), 1),
+					("Variance %", NAMEOF('_Measures'[Underlying Variance %]), 2),
+					("FX impact", NAMEOF('_Measures'[FX Translation Impact]), 3),
+					("YoY (const FX)", NAMEOF('_Measures'[YoY Change % Constant FX]), 4),
+					("Per FTE", NAMEOF('_Measures'[IT Spend per FTE]), 5),
+					("Change %", NAMEOF('_Measures'[Change Spend %]), 6)
+				}
+

@@ -1,0 +1,84 @@
+/// Exchange rates, one row per currency per month, quoted as local-currency units per 1 GBP. Four rate scenarios: month-end (Actual), budget rate fixed per fiscal year (Plan), same month last year (Prior year) and latest month-end held flat (Estimate). The Rate Scenario selector picks which one translates actuals. GBP rows are 1.
+table 'FX Rate'
+	lineageTag: ba48ea1f-3342-4941-af32-77f2678501f3
+
+	/// Currency|yyyy-MM key that the fact tables join on.
+	column CurrencyMonthKey
+		dataType: string
+		isHidden
+		isKey
+		lineageTag: ea66292d-4386-4831-ab5a-6d473e0e2880
+		summarizeBy: none
+		sourceColumn: CurrencyMonthKey
+
+	/// ISO currency code.
+	column Currency
+		dataType: string
+		lineageTag: 14a7a8a4-bb0f-4b57-8ce3-45f7e89b3386
+		summarizeBy: none
+		sourceColumn: Currency
+
+	/// Month the rate applies to (first day of the month; the rate is the month-end rate).
+	column Month
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 4ed8580f-df28-4084-9020-047e0c75a76f
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Month-end closing rate: local currency units per 1 GBP. Divide a local amount by this to get cGBP.
+	column 'LC per GBP'
+		dataType: double
+		formatString: #,0.0000
+		lineageTag: 0accd73b-33ae-4bac-bb16-c004a790b5ab
+		summarizeBy: none
+		sourceColumn: LCPerGBP
+
+	/// Budget (plan) rate for the fiscal year: local currency units per 1 GBP. Used to translate budget and for constant-currency comparisons.
+	column 'Budget LC per GBP'
+		dataType: double
+		formatString: #,0.0000
+		lineageTag: c639d04e-a3b2-4d62-ab69-9120eaf8fff6
+		summarizeBy: none
+		sourceColumn: BudgetLCPerGBP
+
+	/// Prior-year rate: the month-end rate for the same currency 12 months earlier. Translating this year's actuals at it gives a constant-currency comparison with last year. Months with no prior-year rate (the first year of data) fall back to their own month-end rate.
+	column 'PY LC per GBP'
+		dataType: double
+		formatString: #,0.0000
+		lineageTag: ff14f79a-3f8a-4cc9-9ca3-471dfe9de8a1
+		summarizeBy: none
+		sourceColumn: PYLCPerGBP
+
+	/// Estimate rate: the latest available month-end rate for the currency, held flat for every month. Shows what spend looks like at today's rates (a spot-rate re-translation).
+	column 'Estimate LC per GBP'
+		dataType: double
+		formatString: #,0.0000
+		lineageTag: 5da649a3-cf8c-448c-984f-32097c28fba1
+		summarizeBy: none
+		sourceColumn: EstimateLCPerGBP
+
+	partition 'FX Rate' = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("fx_rates.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"Currency", type text}, {"Month", type date}, {"LCPerGBP", type number}, {"BudgetLCPerGBP", type number}}, "en-US"),
+					// Prior year: shift each rate forward 12 months and join it back on currency + month
+					Shifted = Table.TransformColumns(Table.SelectColumns(Typed, {"Currency", "Month", "LCPerGBP"}), {{"Month", each Date.AddYears(_, 1), type date}}),
+					PriorYear = Table.RenameColumns(Shifted, {{"LCPerGBP", "PriorRate"}}),
+					JoinPY = Table.ExpandTableColumn(Table.NestedJoin(Typed, {"Currency", "Month"}, PriorYear, {"Currency", "Month"}, "PY", JoinKind.LeftOuter), "PY", {"PriorRate"}),
+					AddPY = Table.AddColumn(JoinPY, "PYLCPerGBP", each if [PriorRate] = null then [LCPerGBP] else [PriorRate], type number),
+					// Estimate: latest month-end rate per currency, applied to every month
+					LatestMonth = List.Max(Typed[Month]),
+					Latest = Table.RenameColumns(Table.SelectColumns(Table.SelectRows(Typed, each [Month] = LatestMonth), {"Currency", "LCPerGBP"}), {{"LCPerGBP", "EstimateLCPerGBP"}}),
+					JoinEst = Table.ExpandTableColumn(Table.NestedJoin(AddPY, {"Currency"}, Latest, {"Currency"}, "Est", JoinKind.LeftOuter), "Est", {"EstimateLCPerGBP"}),
+					Rates = Table.TransformColumnTypes(Table.RemoveColumns(JoinEst, {"PriorRate"}), {{"EstimateLCPerGBP", type number}}),
+					AddKey = Table.AddColumn(Rates, "CurrencyMonthKey", each [Currency] & "|" & Date.ToText([Month], [Format = "yyyy-MM", Culture = "en-US"]), type text)
+				in
+					AddKey
+
+	annotation PBI_ResultType = Table
+

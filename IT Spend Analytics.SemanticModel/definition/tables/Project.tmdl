@@ -1,0 +1,92 @@
+/// Technology change projects. Key P000 ("Run costs (no project)") holds all run spend so that every fact row has a valid project.
+table Project
+	lineageTag: f21e5d4b-8cfc-4eb5-836e-1019e5652e6d
+
+	column ProjectKey
+		dataType: string
+		isHidden
+		lineageTag: 1af3c4b6-e3cf-4f6b-a693-51abfe664708
+		summarizeBy: none
+		sourceColumn: ProjectKey
+
+	/// Project name. "Run costs (no project)" is used for run costs.
+	column Project
+		dataType: string
+		lineageTag: 6d133c3a-c3cc-4d45-8411-3e93253f754f
+		summarizeBy: none
+		sourceColumn: Project
+
+	/// Legal entity that owns and pays for the project.
+	column 'Project Entity'
+		dataType: string
+		lineageTag: c2e74edf-2a64-4cd4-8b09-4bed8f6bf34d
+		summarizeBy: none
+		sourceColumn: ProjectEntity
+
+	/// Business department sponsoring the project.
+	column 'Sponsor Department'
+		dataType: string
+		lineageTag: 5cd7e4ee-bd64-4f53-80f7-53f3cae3ac8d
+		summarizeBy: none
+		sourceColumn: SponsorDepartment
+
+	/// External delivery partner.
+	column 'Delivery Partner'
+		dataType: string
+		lineageTag: 2b96f42b-5e9f-41b4-a7c8-5102c32512c6
+		summarizeBy: none
+		sourceColumn: DeliveryPartner
+
+	/// First month of the project plan.
+	column 'Start Month'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: 76797460-acbe-474d-b2ec-60f739a40f2c
+		summarizeBy: none
+		sourceColumn: StartMonth
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Planned final month of the project.
+	column 'Planned End Month'
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: d3ebe01c-ef7b-4b43-b514-fe0ae138e89f
+		summarizeBy: none
+		sourceColumn: PlannedEndMonth
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Closed or In flight, as at 31 March 2026.
+	column Status
+		dataType: string
+		lineageTag: 030838f0-402f-49d8-b67e-c10f421aa0f5
+		summarizeBy: none
+		sourceColumn: Status
+
+	/// Approved total project budget (budget at completion, BAC) in GBP at the plan rate. Blank for run costs.
+	column 'Budget at Completion'
+		dataType: double
+		formatString: £#,0
+		lineageTag: b2ec9f6a-b76f-48fb-9940-71352a01ca34
+		summarizeBy: none
+		sourceColumn: BudgetAtCompletionGBP
+
+	/// Short project name for chart labels, where the full name would collide or crowd the plot.
+	column 'Project Short'
+		dataType: string
+		lineageTag: 9b0e5a3c-7d41-4f2a-9e6b-3c1d8f2a4b71
+		summarizeBy: none
+		sourceColumn: ProjectShort
+
+	partition Project = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("dim_project.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"ProjectKey", type text}, {"Project", type text}, {"ProjectEntity", type text}, {"SponsorDepartment", type text}, {"DeliveryPartner", type text}, {"StartMonth", type date}, {"PlannedEndMonth", type date}, {"Status", type text}, {"BudgetAtCompletionGBP", type number}, {"ProjectShort", type text}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

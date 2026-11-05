@@ -1,0 +1,10 @@
+/// Sees every department and region: CFO, CIO, group finance and report owners. No row filters; the two security mapping tables stay hidden and are restricted to the user's own rows.
+role 'All Access'
+	modelPermission: read
+
+	tablePermission 'Security Map' = [UserPrincipalName] = USERPRINCIPALNAME()
+
+	tablePermission 'Region Security Map' = [UserPrincipalName] = USERPRINCIPALNAME()
+
+	annotation PBI_Id = 3a68d6ed00f74e8c8c30382481d1f0b4
+

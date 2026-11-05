@@ -1,0 +1,54 @@
+/// Licensed software products (per-seat subscriptions), with vendor, list price and next renewal date, which is when unused seats can be cut.
+table Product
+	lineageTag: 1dde0488-42d5-45ea-a87b-bc17bf9ede24
+
+	column ProductKey
+		dataType: string
+		isHidden
+		lineageTag: e3624345-5c9f-4785-b3e8-039936eec365
+		summarizeBy: none
+		sourceColumn: ProductKey
+
+	/// Software product, e.g. Salesforce Sales Cloud.
+	column Product
+		dataType: string
+		lineageTag: 9906ad2e-ba5e-4708-ae92-820b8bede0ff
+		summarizeBy: none
+		sourceColumn: Product
+
+	/// Vendor of the product.
+	column 'Product Vendor'
+		dataType: string
+		lineageTag: c04cd94a-fbfa-4549-a93a-e7b6836ec25e
+		summarizeBy: none
+		sourceColumn: Vendor
+
+	/// List price per seat per month in GBP (UK price list; local prices differ).
+	column 'List Price GBP per Seat Month'
+		dataType: decimal
+		formatString: £#,0.00
+		lineageTag: f7c0959e-6e4c-4bb7-b767-b66e30068e33
+		summarizeBy: none
+		sourceColumn: ListPriceGBPPerSeatMonth
+
+	/// Next contract renewal date: the next opportunity to reduce seat counts.
+	column 'Next Renewal Date'
+		dataType: dateTime
+		formatString: mmm yy
+		lineageTag: dc010c64-8d46-435a-8963-6631990becba
+		summarizeBy: none
+		sourceColumn: NextRenewalDate
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	partition Product = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("dim_product.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"ProductKey", type text}, {"Product", type text}, {"Vendor", type text}, {"ListPriceGBPPerSeatMonth", Currency.Type}, {"NextRenewalDate", type date}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

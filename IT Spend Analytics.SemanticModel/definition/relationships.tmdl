@@ -1,0 +1,104 @@
+relationship 0448878b-7158-54a6-b23f-67613c1a6df7
+	fromColumn: 'IT Spend'.Month
+	toColumn: Date.Date
+
+relationship 99e91cd2-50ae-594a-9e18-ea92a52bf928
+	fromColumn: 'IT Spend'.EntityKey
+	toColumn: Entity.EntityKey
+
+relationship e9202314-8645-5d15-a366-9ad0de537206
+	fromColumn: 'IT Spend'.DepartmentKey
+	toColumn: Department.DepartmentKey
+
+relationship 3e8a9f3d-6aaa-530c-ad42-3ac813373e81
+	fromColumn: 'IT Spend'.CategoryKey
+	toColumn: 'Cost Category'.CategoryKey
+
+relationship 408012e1-fafe-5118-8f53-12f381029696
+	fromColumn: 'IT Spend'.VendorKey
+	toColumn: Vendor.VendorKey
+
+relationship f63aa7bf-7f36-51f6-a2fb-e8a42ff0ff48
+	fromColumn: 'IT Spend'.ProjectKey
+	toColumn: Project.ProjectKey
+
+relationship 490a98e2-6e42-5a30-a6ce-0b828ce3225f
+	fromColumn: 'IT Spend'.CurrencyMonthKey
+	toColumn: 'FX Rate'.CurrencyMonthKey
+
+relationship 12184545-90cb-5e5f-8070-6a868413918d
+	fromColumn: 'IT Budget'.Month
+	toColumn: Date.Date
+
+relationship de6f16c6-9b08-5d2e-a983-17b2414005d0
+	fromColumn: 'IT Budget'.EntityKey
+	toColumn: Entity.EntityKey
+
+relationship f32de4c2-8bdd-5478-91df-d79851df6e6e
+	fromColumn: 'IT Budget'.DepartmentKey
+	toColumn: Department.DepartmentKey
+
+relationship 1e63f2ca-a4c9-51c9-b982-ea4c050270ed
+	fromColumn: 'IT Budget'.CategoryKey
+	toColumn: 'Cost Category'.CategoryKey
+
+relationship df98afbc-d2fc-5aeb-a42e-e8da4bc7709b
+	fromColumn: 'IT Budget'.ProjectKey
+	toColumn: Project.ProjectKey
+
+relationship 87d704fa-e73f-503f-9c09-cf102300effb
+	fromColumn: 'IT Budget'.CurrencyMonthKey
+	toColumn: 'FX Rate'.CurrencyMonthKey
+
+relationship 9b6d17ac-78fa-598f-9b95-485cf8aefaf7
+	fromColumn: Headcount.Month
+	toColumn: Date.Date
+
+relationship e829d6e8-ceba-5790-93c9-5074b855f1db
+	fromColumn: Headcount.EntityKey
+	toColumn: Entity.EntityKey
+
+relationship 3f9c55e6-9686-5812-8638-f4594c6b1b68
+	fromColumn: Headcount.DepartmentKey
+	toColumn: Department.DepartmentKey
+
+relationship bb7d1528-4a63-5ef0-bd4d-4786ff3d04dc
+	fromColumn: Licence.Month
+	toColumn: Date.Date
+
+relationship 510354f1-90c2-524e-b33d-03384c100fb7
+	fromColumn: Licence.EntityKey
+	toColumn: Entity.EntityKey
+
+relationship d3875aed-4f61-5973-99cc-9246edef7565
+	fromColumn: Licence.DepartmentKey
+	toColumn: Department.DepartmentKey
+
+relationship 9db8fc9d-ae97-5de8-894e-94afb1461fc7
+	fromColumn: Licence.ProductKey
+	toColumn: Product.ProductKey
+
+relationship 9d091e96-f27a-5fdb-bfd3-a8b2fc3e2423
+	fromColumn: Licence.CurrencyMonthKey
+	toColumn: 'FX Rate'.CurrencyMonthKey
+
+relationship c99ab4f9-3c63-5357-a605-d63254c17422
+	fromColumn: 'Project Delivery'.Month
+	toColumn: Date.Date
+
+relationship c3068160-bd68-5c66-a0ac-e30b1c031596
+	fromColumn: 'Project Delivery'.EntityKey
+	toColumn: Entity.EntityKey
+
+relationship b3749d15-fac6-567d-addc-6ed0e5e84e53
+	fromColumn: 'Project Delivery'.DepartmentKey
+	toColumn: Department.DepartmentKey
+
+relationship 3dabb0aa-19c8-54e1-8488-ee268b5b5418
+	fromColumn: 'Project Delivery'.ProjectKey
+	toColumn: Project.ProjectKey
+
+relationship b245f9bc-a411-58eb-9fa1-2ef679ea7c62
+	fromColumn: 'Project Delivery'.CurrencyMonthKey
+	toColumn: 'FX Rate'.CurrencyMonthKey
+

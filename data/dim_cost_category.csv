@@ -1,0 +1,7 @@
+CategoryKey,Category,CategoryGroup,SortOrder
+C01,Software Subscriptions,Run - Technology,1
+C02,Cloud Services,Run - Technology,2
+C03,Applications & Maintenance,Run - Technology,3
+C04,IT Employees,Run - People,4
+C05,IT Contractors,Run - People,5
+C06,Technology Projects,Change,6

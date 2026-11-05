@@ -1,0 +1,77 @@
+/// Legal entities (one per country), with their region and local (functional) currency. Local currency views only make sense when one currency is in context.
+table Entity
+	lineageTag: 54e7b001-4f2c-4561-be80-24e7e5ef6cbf
+
+	column EntityKey
+		dataType: string
+		isHidden
+		lineageTag: badac8fd-c9fb-4fab-98a6-69fb6958c734
+		summarizeBy: none
+		sourceColumn: EntityKey
+
+	/// Legal entity name, e.g. UK - London (Group HQ).
+	column Entity
+		dataType: string
+		lineageTag: 37082166-4126-425c-a9cc-13f52fecd12c
+		summarizeBy: none
+		sourceColumn: Entity
+
+	/// Country of the legal entity.
+	column Country
+		dataType: string
+		lineageTag: fa2670fd-f5fa-4ed2-a824-73857300a786
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: Country
+
+	/// Reporting region: UK & Ireland, Europe, Americas, APAC.
+	column Region
+		dataType: string
+		lineageTag: 8614653b-b251-47ee-81c3-ed9747a84f82
+		summarizeBy: none
+		sourceColumn: Region
+
+	/// ISO code of the entity's local (functional) currency, e.g. USD.
+	column Currency
+		dataType: string
+		lineageTag: 41c8f195-6dd0-4347-9ba9-1e7fe066f838
+		summarizeBy: none
+		sourceColumn: Currency
+
+	/// Name of the local currency.
+	column 'Currency Name'
+		dataType: string
+		lineageTag: 3c226c2b-9565-490a-8c2b-64488bd8d000
+		summarizeBy: none
+		sourceColumn: CurrencyName
+
+	/// Symbol of the local currency, used in dynamic format strings.
+	column 'Currency Symbol'
+		dataType: string
+		isHidden
+		lineageTag: 07c45f1a-3816-4b8f-96a3-694f4cd0d231
+		summarizeBy: none
+		sourceColumn: CurrencySymbol
+
+	hierarchy Geography
+		lineageTag: 55c8db19-07b3-4456-a862-6f5752a4b17c
+
+		level Region
+			lineageTag: b3079d3e-4844-4950-a8ed-90f97bae19ef
+			column: Region
+
+		level Country
+			lineageTag: f2032cc8-38c0-449b-9a61-c23d8e5f6753
+			column: Country
+
+	partition Entity = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("dim_entity.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"EntityKey", type text}, {"Entity", type text}, {"Country", type text}, {"Region", type text}, {"Currency", type text}, {"CurrencyName", type text}, {"CurrencySymbol", type text}})
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

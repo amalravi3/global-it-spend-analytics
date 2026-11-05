@@ -1,0 +1,32 @@
+/// Row-level security mapping: which regional manager (user principal name) may see which region. Used only by the Regional Manager role.
+table 'Region Security Map'
+	isHidden
+	lineageTag: 2d17ab39-03f6-4bda-aea3-0edb2971c717
+
+	/// Sign-in name (UPN) of the regional manager.
+	column UserPrincipalName
+		dataType: string
+		isHidden
+		lineageTag: 89d27593-7151-4a1f-b486-605d78ba9871
+		summarizeBy: none
+		sourceColumn: UserPrincipalName
+
+	/// Region the user may see (Americas, APAC, Europe, UK & Ireland). A user can have several rows.
+	column Region
+		dataType: string
+		isHidden
+		lineageTag: 6d697729-72bc-4583-b9f3-88bd936870fa
+		summarizeBy: none
+		sourceColumn: Region
+
+	partition 'Region Security Map' = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("region_security_map.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"UserPrincipalName", type text}, {"Region", type text}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

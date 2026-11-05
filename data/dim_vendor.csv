@@ -1,0 +1,17 @@
+VendorKey,Vendor,VendorType
+V01,Microsoft,Software & Cloud
+V02,Salesforce,Software (SaaS)
+V03,ServiceNow,Software (SaaS)
+V04,Atlassian,Software (SaaS)
+V05,Adobe,Software (SaaS)
+V06,Zoom,Software (SaaS)
+V07,GitHub,Software (SaaS)
+V08,Amazon Web Services,Cloud
+V09,SAP,Enterprise application
+V10,Workday,Enterprise application
+V11,Internal - IT payroll,Internal
+V12,Apex Technical Resourcing,Contractor agency
+V13,Meridian Talent Partners,Contractor agency
+V14,Kaveri IT Services,Contractor agency
+V15,Northbridge Consulting,Delivery partner
+V16,Bluefield Digital,Delivery partner

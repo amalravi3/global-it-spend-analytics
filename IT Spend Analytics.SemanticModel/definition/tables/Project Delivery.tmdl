@@ -1,0 +1,88 @@
+/// Monthly project delivery data: planned value (the approved project budget phased by month), earned value (budgeted cost of the work actually completed) and story points delivered. Actual project cost comes from IT Spend (Technology Projects).
+table 'Project Delivery'
+	lineageTag: 05064cda-ff87-4747-b712-9fa2120492e9
+
+	column Month
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: 377085da-8240-451c-a076-69526515ab69
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column ProjectKey
+		dataType: string
+		isHidden
+		lineageTag: 81d24c90-82b8-46b9-a818-d07f91c7bca6
+		summarizeBy: none
+		sourceColumn: ProjectKey
+
+	column EntityKey
+		dataType: string
+		isHidden
+		lineageTag: c8807799-ec42-4bce-a53c-cd976a525b17
+		summarizeBy: none
+		sourceColumn: EntityKey
+
+	column DepartmentKey
+		dataType: string
+		isHidden
+		lineageTag: 20824df1-e021-4b1c-8ea7-c40b0fcae1c7
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+	column Currency
+		dataType: string
+		isHidden
+		lineageTag: 68db55f0-0c06-4e65-9bf5-e2551fce09ad
+		summarizeBy: none
+		sourceColumn: Currency
+
+	/// Planned value (budgeted cost of work scheduled) in local currency.
+	column 'Planned Value LC'
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: 97e3b97d-f29c-4e9c-82ec-beee83a599fc
+		summarizeBy: sum
+		sourceColumn: PlannedValueLC
+
+	/// Earned value (budgeted cost of work performed) in local currency.
+	column 'Earned Value LC'
+		dataType: decimal
+		isHidden
+		formatString: #,0.00
+		lineageTag: ba023868-0ce5-4f30-befb-9a851c02ab62
+		summarizeBy: sum
+		sourceColumn: EarnedValueLC
+
+	/// Story points accepted as done by the product owner in the month (team-specific relative estimates).
+	column 'Story Points Delivered'
+		dataType: int64
+		isHidden
+		formatString: #,0
+		lineageTag: a4625830-3cd0-4ef1-bdcf-c31c6d33b39a
+		summarizeBy: sum
+		sourceColumn: StoryPointsDelivered
+
+	column CurrencyMonthKey
+		dataType: string
+		isHidden
+		lineageTag: 52714c32-9e86-4e87-86c8-1355f38fa3dd
+		summarizeBy: none
+		sourceColumn: CurrencyMonthKey
+
+	partition 'Project Delivery' = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("fact_project_delivery.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"Month", type date}, {"ProjectKey", type text}, {"EntityKey", type text}, {"DepartmentKey", type text}, {"Currency", type text}, {"PlannedValueLC", Currency.Type}, {"EarnedValueLC", Currency.Type}, {"StoryPointsDelivered", Int64.Type}}, "en-US"),
+					AddFxKey = Table.AddColumn(Typed, "CurrencyMonthKey", each [Currency] & "|" & Date.ToText([Month], [Format = "yyyy-MM", Culture = "en-US"]), type text)
+				in
+					AddFxKey
+
+	annotation PBI_ResultType = Table
+

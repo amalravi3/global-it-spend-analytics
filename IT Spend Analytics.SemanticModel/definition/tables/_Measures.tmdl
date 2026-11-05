@@ -1,0 +1,1168 @@
+/// Home table for every measure. Visible measures follow the Reporting Currency selector (cGBP or local currency). Measures ending in "cGBP" or "LC" are hidden building blocks.
+table _Measures
+	lineageTag: 67c1724b-3018-4f9e-b0ea-45590c621757
+
+	/// Total actual IT spend in local currency. Only meaningful when a single currency is in context.
+	measure 'Actual LC' = SUM('IT Spend'[Amount LC])
+		formatString: #,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 1717d2bc-2976-46ba-a2bb-ee892197b464
+
+	/// Actual IT spend in consolidated GBP, translated at the rate of the selected Rate Scenario for each row's currency and month (month-end rate by default).
+	measure 'Actual cGBP' =
+			VAR scenario = [Rate Scenario Selected]
+			RETURN
+				SUMX(
+					'IT Spend',
+					'IT Spend'[Amount LC]
+						/ SWITCH(
+							scenario,
+							"Plan", RELATED('FX Rate'[Budget LC per GBP]),
+							"Prior year", RELATED('FX Rate'[PY LC per GBP]),
+							"Estimate", RELATED('FX Rate'[Estimate LC per GBP]),
+							RELATED('FX Rate'[LC per GBP])
+						)
+				)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: bca12f09-5a68-4e34-ae51-f07248e62586
+
+	/// Actual IT spend translated at the fiscal-year budget rate (constant currency). Used to separate FX effects from underlying performance.
+	measure 'Actual cGBP @ Budget Rate' =
+			SUMX(
+				'IT Spend',
+				'IT Spend'[Amount LC] / RELATED('FX Rate'[Budget LC per GBP])
+			)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: a8d6a09a-c768-4980-8320-f3d645a7d59f
+
+	/// Budget in local currency.
+	measure 'Budget LC' = IF([Budget Grain], SUM('IT Budget'[Budget LC]))
+		formatString: #,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: c52f631f-b722-423c-a741-a4d1e8750631
+
+	/// Budget in consolidated GBP, translated at the fiscal-year budget rate (the rate the budget was approved at).
+	measure 'Budget cGBP' =
+			IF(
+				[Budget Grain],
+				SUMX(
+					'IT Budget',
+					'IT Budget'[Budget LC] / RELATED('FX Rate'[Budget LC per GBP])
+				)
+			)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 1db9ccf2-d0ab-42c4-bfad-fa7fb486eab6
+
+	/// Underlying (constant-currency) variance in cGBP: actuals and budget both at budget rates. Positive = overspend.
+	measure 'Underlying Variance cGBP' = IF([Budget Grain], [Actual cGBP @ Budget Rate] - [Budget cGBP])
+		formatString: £#,0;-£#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 830051d1-ed3e-4f5b-9a04-2deabce2ed5b
+
+	/// FX translation effect in cGBP: actuals at the selected Rate Scenario minus actuals at budget rates (zero under Plan). Negative = GBP stronger than plan, which makes overseas spend look cheaper.
+	measure 'FX Translation Impact cGBP' = [Actual cGBP] - [Actual cGBP @ Budget Rate]
+		formatString: £#,0;-£#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: ac16f02a-0894-4ec3-9e25-a6bbbdb16cc0
+
+	measure 'Licence Cost LC' = SUM(Licence[Cost LC])
+		formatString: #,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 37fba44a-4078-45b7-b3aa-287e2124105d
+
+	/// Licence cost in cGBP at the selected Rate Scenario.
+	measure 'Licence Cost cGBP' =
+			VAR scenario = [Rate Scenario Selected]
+			RETURN
+				SUMX(
+					Licence,
+					Licence[Cost LC]
+						/ SWITCH(
+							scenario,
+							"Plan", RELATED('FX Rate'[Budget LC per GBP]),
+							"Prior year", RELATED('FX Rate'[PY LC per GBP]),
+							"Estimate", RELATED('FX Rate'[Estimate LC per GBP]),
+							RELATED('FX Rate'[LC per GBP])
+						)
+				)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 3d4d7d03-3bf9-4753-9e3b-43adeb796a9f
+
+	measure 'Unused Licence Cost LC' =
+			SUMX(
+				Licence,
+				DIVIDE(Licence[Seats Purchased] - Licence[Active Users], Licence[Seats Purchased]) * Licence[Cost LC]
+			)
+		formatString: #,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: b526d523-1db8-4dbf-9979-96cc20ec6300
+
+	/// Cost of unused seats in cGBP at the selected Rate Scenario.
+	measure 'Unused Licence Cost cGBP' =
+			VAR scenario = [Rate Scenario Selected]
+			RETURN
+				SUMX(
+					Licence,
+					DIVIDE(Licence[Seats Purchased] - Licence[Active Users], Licence[Seats Purchased]) * Licence[Cost LC]
+						/ SWITCH(
+							scenario,
+							"Plan", RELATED('FX Rate'[Budget LC per GBP]),
+							"Prior year", RELATED('FX Rate'[PY LC per GBP]),
+							"Estimate", RELATED('FX Rate'[Estimate LC per GBP]),
+							RELATED('FX Rate'[LC per GBP])
+						)
+				)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 051f4f62-3da6-43a3-9694-c7f43a52689f
+
+	measure 'Earned Value LC' = SUM('Project Delivery'[Earned Value LC])
+		formatString: #,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: cd9c78c0-8523-4d31-b616-eb669213a201
+
+	/// Earned value in cGBP, at the same Rate Scenario as actual cost so that CPI is never distorted by FX.
+	measure 'Earned Value cGBP' =
+			VAR scenario = [Rate Scenario Selected]
+			RETURN
+				SUMX(
+					'Project Delivery',
+					'Project Delivery'[Earned Value LC]
+						/ SWITCH(
+							scenario,
+							"Plan", RELATED('FX Rate'[Budget LC per GBP]),
+							"Prior year", RELATED('FX Rate'[PY LC per GBP]),
+							"Estimate", RELATED('FX Rate'[Estimate LC per GBP]),
+							RELATED('FX Rate'[LC per GBP])
+						)
+				)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 7f63f116-fe29-4303-b97e-08e090dd1c75
+
+	measure 'Planned Value LC' = SUM('Project Delivery'[Planned Value LC])
+		formatString: #,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 25deaa74-5260-4661-84b7-f08bab5468e4
+
+	/// Planned value in cGBP, at the selected Rate Scenario.
+	measure 'Planned Value cGBP' =
+			VAR scenario = [Rate Scenario Selected]
+			RETURN
+				SUMX(
+					'Project Delivery',
+					'Project Delivery'[Planned Value LC]
+						/ SWITCH(
+							scenario,
+							"Plan", RELATED('FX Rate'[Budget LC per GBP]),
+							"Prior year", RELATED('FX Rate'[PY LC per GBP]),
+							"Estimate", RELATED('FX Rate'[Estimate LC per GBP]),
+							RELATED('FX Rate'[LC per GBP])
+						)
+				)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: a1fda463-82be-40dd-befd-3d96792c030d
+
+	measure 'Project Actual Cost LC' = CALCULATE([Actual LC], KEEPFILTERS('Cost Category'[Category] = "Technology Projects"))
+		formatString: #,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 8e274ebc-83b8-4df0-80d1-f61607b3f914
+
+	measure 'Project Actual Cost cGBP' = CALCULATE([Actual cGBP], KEEPFILTERS('Cost Category'[Category] = "Technology Projects"))
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 1e711568-de56-4e2e-85ed-94af32ccd3f1
+
+	measure 'Cost per Story Point cGBP' = DIVIDE([Project Actual Cost cGBP], [Story Points Delivered])
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: b8e3bc2c-7dd4-4f55-8689-21c7880e1a2f
+
+	/// Selected Rate Scenario: Actual (month-end, default), Plan, Prior year or Estimate.
+	measure 'Rate Scenario Selected' = SELECTEDVALUE('Rate Scenario'[Scenario], "Actual")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 40458b97-0f38-42f9-8bb2-bec9f55be85b
+
+	/// TRUE when the Reporting Currency selector is set to Local currency.
+	measure 'Is Local Currency' = SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency"
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 1101d528-c854-4bb5-bf2c-54ef3d36156d
+
+	/// Number of months in the current filter context that have data. Used to annualise.
+	measure 'Months in Period' =
+			COUNTROWS(
+				FILTER(
+					VALUES('Date'[Month Start]),
+					CALCULATE(COUNTROWS(Headcount)) > 0
+				)
+			)
+		formatString: 0
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 4f560a21-501b-4946-bea1-e4dfe773540e
+
+	/// Header note: the currency and rate basis in use, and the latest month with actuals.
+	measure 'Currency Context' =
+			VAR asOf = "data to " & FORMAT(CALCULATE(MAX('IT Spend'[Month]), REMOVEFILTERS()), "mmm yyyy")
+			RETURN
+				IF(
+					[Is Local Currency],
+					IF(
+						HASONEVALUE(Entity[Currency]),
+						VALUES(Entity[Currency Name]) & " · " & asOf,
+						"Local currency: pick one country"
+					),
+					"cGBP · " & SELECTEDVALUE('Rate Scenario'[Rate Basis], "month-end rates") & " · " & asOf
+				)
+		displayFolder: 8. Helpers
+		lineageTag: 87cedb18-652d-423d-8db1-5ed2a04659c8
+
+	/// Average month-end rate (LC per £1) over the selected months, for the currencies in the current filter (region/country slicers apply).
+	measure 'Rate Month-end' = CALCULATE(AVERAGE('FX Rate'[LC per GBP]), KEEPFILTERS(TREATAS(VALUES('Date'[Month Start]), 'FX Rate'[Month])), KEEPFILTERS(TREATAS(VALUES(Entity[Currency]), 'FX Rate'[Currency])))
+		formatString: #,0.0000
+		displayFolder: 7. FX Rates
+		lineageTag: 42c3e436-03d5-4ad8-b4df-9d128809256f
+
+	/// Plan (budget) rate, LC per £1, averaged over the selected months.
+	measure 'Rate Plan' = CALCULATE(AVERAGE('FX Rate'[Budget LC per GBP]), KEEPFILTERS(TREATAS(VALUES('Date'[Month Start]), 'FX Rate'[Month])), KEEPFILTERS(TREATAS(VALUES(Entity[Currency]), 'FX Rate'[Currency])))
+		formatString: #,0.0000
+		displayFolder: 7. FX Rates
+		lineageTag: ad4b6f4c-f7bf-4779-b90e-7935576f1010
+
+	/// Prior-year rate (same months last year), LC per £1, averaged over the selected months.
+	measure 'Rate Prior Year' = CALCULATE(AVERAGE('FX Rate'[PY LC per GBP]), KEEPFILTERS(TREATAS(VALUES('Date'[Month Start]), 'FX Rate'[Month])), KEEPFILTERS(TREATAS(VALUES(Entity[Currency]), 'FX Rate'[Currency])))
+		formatString: #,0.0000
+		displayFolder: 7. FX Rates
+		lineageTag: 6876431d-7829-4ca5-9ede-58a6f4294fad
+
+	/// Estimate rate: the latest month-end rate, LC per £1.
+	measure 'Rate Estimate' = CALCULATE(AVERAGE('FX Rate'[Estimate LC per GBP]), KEEPFILTERS(TREATAS(VALUES('Date'[Month Start]), 'FX Rate'[Month])), KEEPFILTERS(TREATAS(VALUES(Entity[Currency]), 'FX Rate'[Currency])))
+		formatString: #,0.0000
+		displayFolder: 7. FX Rates
+		lineageTag: 13dd972b-2069-49b4-98a1-fc9aaf13827a
+
+	/// Month-end rate against plan: positive = GBP stronger than plan (overseas spend translates to fewer pounds).
+	measure 'GBP vs Plan %' = DIVIDE([Rate Month-end], [Rate Plan]) - 1
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 7. FX Rates
+		lineageTag: 89048eee-b887-42b1-bf2c-c88c8fbbb01e
+
+	/// Colour for underlying (constant-currency) variance: red = overspend, green = underspend, when the variance breaches BOTH the % and the cGBP amount chosen in 'Variance Flag' (default over 2% and £50K); dark text = within tolerance.
+	measure 'Variance Colour' =
+			VAR v = [Underlying Variance %]
+			VAR amt = [Underlying Variance cGBP]
+			VAR pct = SELECTEDVALUE('Variance Flag'[Flag %], 0.02)
+			VAR minAmt = SELECTEDVALUE('Variance Flag'[Flag Amount], 50000)
+			RETURN
+				SWITCH(
+					TRUE(),
+					ISBLANK(v), BLANK(),
+					v > pct && amt > minAmt, "#B3261E",
+					v < -pct && amt < -minAmt, "#1B7F3B",
+					"#1F2933"
+				)
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 84312501-9a0b-43b3-b176-68fe8cb42a37
+
+	/// Colour for licence utilisation: red below 60%, amber below 80%, green otherwise.
+	measure 'Utilisation Colour' =
+			VAR u = [Licence Utilisation %]
+			RETURN
+				SWITCH(TRUE(), ISBLANK(u), BLANK(), u < 0.6, "#B3261E", u < 0.8, "#B26B00", "#1B7F3B")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: af52b23b-3bcf-43d8-8031-7cb8b388ad3f
+
+	/// Colour for cost performance index: red below 0.90, amber below 0.97, green otherwise.
+	measure 'CPI Colour' =
+			VAR c = [CPI]
+			RETURN
+				SWITCH(TRUE(), ISBLANK(c), BLANK(), c < 0.9, "#B3261E", c < 0.97, "#B26B00", "#1B7F3B")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: a75eeddd-dbda-4d11-aa17-5b2892d86a5f
+
+	/// Value of one bridge step (cGBP): the underlying variance for a cost category, or the FX translation effect.
+	measure 'Bridge Step Value' =
+			VAR stepCategory = SELECTEDVALUE('Bridge Step'[Category])
+			VAR stepType = SELECTEDVALUE('Bridge Step'[Step Type])
+			RETURN
+				SWITCH(
+					stepType,
+					"Category", CALCULATE([Underlying Variance cGBP], KEEPFILTERS(TREATAS({ stepCategory }, 'Cost Category'[Category]))),
+					"FX", [FX Translation Impact cGBP]
+				)
+		formatString: £#,0;-£#,0
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 12302e5f-8b38-400d-b9a0-1ac2c9645924
+
+	/// Actual IT spend in the selected reporting currency (cGBP at the selected Rate Scenario, month-end by default; or local currency).
+	measure Actual =
+			IF(
+				[Is Local Currency],
+				IF(HASONEVALUE(Entity[Currency]), [Actual LC]),
+				[Actual cGBP]
+			)
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 04d76d81-30ad-439a-bd59-54ba647d6bb4
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Approved budget in the selected reporting currency (cGBP at budget rates, or local currency).
+	measure Budget =
+			IF(
+				[Is Local Currency],
+				IF(HASONEVALUE(Entity[Currency]), [Budget LC]),
+				[Budget cGBP]
+			)
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 8782533e-2a3e-49dd-8fac-2eb3a954c287
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Reported variance: Actual minus Budget. Positive = overspend (unfavourable). In cGBP this includes the FX translation effect.
+	measure 'Variance vs Budget' =
+			IF(
+				[Budget Grain] && (NOT ISBLANK([Actual]) || NOT ISBLANK([Budget])),
+				[Actual] - [Budget]
+			)
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 29e3c236-ec8a-4e6f-b08b-678cd2657472
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Reported variance as a % of budget. Positive = overspend.
+	measure 'Variance vs Budget %' = DIVIDE([Variance vs Budget], [Budget])
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 55f17072-85df-491b-aaec-c874789502f7
+
+	/// Variance to budget at constant (budget) exchange rates: the part of the variance that managers control. Positive = overspend.
+	measure 'Underlying Variance' =
+			IF(
+				[Is Local Currency],
+				[Variance vs Budget],
+				[Underlying Variance cGBP]
+			)
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 1a064ffe-9cbd-4aff-b5f0-0c20cb05cde1
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Underlying (constant-currency) variance as a % of budget.
+	measure 'Underlying Variance %' = DIVIDE([Underlying Variance], [Budget])
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 138bc483-8fb8-41f6-8cde-f045c4943b70
+
+	/// Part of the cGBP variance caused only by exchange-rate movements against the budget rate. Negative = favourable (GBP strengthened). Zero in local currency.
+	measure 'FX Translation Impact' = IF(NOT [Is Local Currency], [FX Translation Impact cGBP])
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 7ae9b108-45c5-4f68-b23b-e93272eaf60d
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Actual spend for the same period last year, in the selected currency. Blank when more than one fiscal year is selected, where a year-on-year comparison has no meaning. Under the Prior year scenario both years are at last year's rates, so YoY is constant-currency.
+	measure 'Actual PY' = IF(HASONEVALUE('Date'[Fiscal Year]), CALCULATE([Actual], SAMEPERIODLASTYEAR('Date'[Date])))
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 75dd344d-f0b8-4193-89c7-a46acd0c260f
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Change against the same period last year.
+	measure 'YoY Change' = IF(NOT ISBLANK([Actual PY]), [Actual] - [Actual PY])
+		displayFolder: 1. Spend vs Budget
+		lineageTag: df197801-64aa-4875-8fac-0ada661f97fc
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// % change against the same period last year.
+	measure 'YoY Change %' = DIVIDE([YoY Change], [Actual PY])
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 1. Spend vs Budget
+		lineageTag: d2a06293-7c03-4521-ad63-5d12843b4bf8
+
+	/// Waterfall value: the underlying variance for each cost category plus FX translation. The total equals the reported cGBP variance to budget.
+	measure 'Bridge Value' = SUMX(VALUES('Bridge Step'[Step]), [Bridge Step Value])
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 302b1047-9afa-4269-8cd7-961c3d9080ec
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Average month-end FTE over the selected months. Headcount is a snapshot, so it is averaged across months, not summed.
+	measure 'Average FTE' =
+			AVERAGEX(
+				VALUES('Date'[Month Start]),
+				CALCULATE(SUM(Headcount[FTE]))
+			)
+		formatString: #,0
+		displayFolder: 2. Per Employee
+		lineageTag: 4e7a5534-bdc8-4f2e-a7cc-188bae3ff402
+
+	/// FTE at the last month in the selection that has data.
+	measure 'Closing FTE' =
+			VAR lastMonth =
+				CALCULATE(MAX(Headcount[Month]))
+			RETURN
+				CALCULATE(SUM(Headcount[FTE]), 'Date'[Month Start] = lastMonth)
+		formatString: #,0
+		displayFolder: 2. Per Employee
+		lineageTag: 493a2e1d-ceab-47ac-8e07-366df5f2f819
+
+	/// Annualised IT spend per full-time employee: Actual ÷ Average FTE × 12 ÷ months in period. Comparable across periods of any length.
+	measure 'IT Spend per FTE' = DIVIDE([Actual], [Average FTE]) * DIVIDE(12, [Months in Period])
+		displayFolder: 2. Per Employee
+		lineageTag: efc5ff37-63e7-4bd8-ac5d-84a214b76eef
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Annualised budget per full-time employee (on actual FTE).
+	measure 'Budget per FTE' = DIVIDE([Budget], [Average FTE]) * DIVIDE(12, [Months in Period])
+		displayFolder: 2. Per Employee
+		lineageTag: 8376a50a-9d1f-4a4a-85c0-c24d09542381
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Annualised IT spend per FTE for the same period last year.
+	measure 'IT Spend per FTE PY' = CALCULATE([IT Spend per FTE], SAMEPERIODLASTYEAR('Date'[Date]))
+		displayFolder: 2. Per Employee
+		lineageTag: 99f6481f-70ff-4b06-953c-9fcc90b784e4
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// % change in annualised IT spend per FTE against last year.
+	measure 'IT Spend per FTE YoY %' = DIVIDE([IT Spend per FTE] - [IT Spend per FTE PY], [IT Spend per FTE PY])
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 2. Per Employee
+		lineageTag: 5fbb2c64-827a-4a83-939a-0785bb3cf1c0
+
+	/// Group-wide annualised IT spend per FTE across all departments. Use as a benchmark line next to department values.
+	measure 'Group IT Spend per FTE' = CALCULATE([IT Spend per FTE], REMOVEFILTERS(Department))
+		displayFolder: 2. Per Employee
+		lineageTag: 110e3b25-18d4-458f-ab7c-0f79e9b24a91
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Software licence cost in the selected currency.
+	measure 'Licence Cost' =
+			IF(
+				[Is Local Currency],
+				IF(HASONEVALUE(Entity[Currency]), [Licence Cost LC]),
+				[Licence Cost cGBP]
+			)
+		displayFolder: 3. Run Costs
+		lineageTag: 4a53fbab-21b0-4e82-980b-67938ed94cbe
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Cost of purchased seats that had no active user ("shelfware"): (seats − active users) ÷ seats × cost, per month.
+	measure 'Unused Licence Cost' =
+			IF(
+				[Is Local Currency],
+				IF(HASONEVALUE(Entity[Currency]), [Unused Licence Cost LC]),
+				[Unused Licence Cost cGBP]
+			)
+		displayFolder: 3. Run Costs
+		lineageTag: cb5c35a8-ee02-4c22-af59-7c8e1b4bd61e
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Share of purchased seat-months that had an active user.
+	measure 'Licence Utilisation %' = DIVIDE(SUM(Licence[Active Users]), SUM(Licence[Seats Purchased]))
+		formatString: 0%
+		displayFolder: 3. Run Costs
+		lineageTag: 6c255866-d1e7-47d6-8125-2c0f3d82627a
+
+	/// Average seats purchased per month in the period.
+	measure 'Seats Purchased' = AVERAGEX(VALUES('Date'[Month Start]), CALCULATE(SUM(Licence[Seats Purchased])))
+		formatString: #,0
+		displayFolder: 3. Run Costs
+		lineageTag: 11062324-954f-4f5c-ae6c-76f1634dbf94
+
+	/// Average active users per month in the period.
+	measure 'Active Users' = AVERAGEX(VALUES('Date'[Month Start]), CALCULATE(SUM(Licence[Active Users])))
+		formatString: #,0
+		displayFolder: 3. Run Costs
+		lineageTag: d1be197b-9d4f-4a3c-bfba-e792f001d23e
+
+	/// Licence cost per active user per month: what each person who actually uses the tool really costs.
+	measure 'Cost per Active User (monthly)' = DIVIDE([Licence Cost], SUM(Licence[Active Users]))
+		displayFolder: 3. Run Costs
+		lineageTag: eb4a2ab4-190a-4c0c-b233-461b78eeb5e5
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Actual Cloud Services spend in the selected currency.
+	measure 'Cloud Spend' = CALCULATE([Actual], KEEPFILTERS('Cost Category'[Category] = "Cloud Services"))
+		displayFolder: 3. Run Costs
+		lineageTag: 86935cd6-a480-4087-be4f-2180aaa8a232
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Cloud Services budget in the selected currency.
+	measure 'Cloud Budget' = CALCULATE([Budget], KEEPFILTERS('Cost Category'[Category] = "Cloud Services"))
+		displayFolder: 3. Run Costs
+		lineageTag: 118f1526-fb27-4144-bc35-ccf4408dada0
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Underlying (constant-currency) Cloud Services variance as a % of budget.
+	measure 'Cloud Underlying Variance %' = CALCULATE([Underlying Variance %], KEEPFILTERS('Cost Category'[Category] = "Cloud Services"))
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 3. Run Costs
+		lineageTag: b367b4e5-3741-4b8a-bbdf-e0840e51b822
+
+	/// Underlying (constant-currency) variance on IT Employees. Negative = vacancies or underspend.
+	measure 'IT Employees Underlying Variance' = CALCULATE([Underlying Variance], KEEPFILTERS('Cost Category'[Category] = "IT Employees"))
+		displayFolder: 3. Run Costs
+		lineageTag: f6ec0c64-53c6-479d-9752-5cc57b0695b0
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Underlying (constant-currency) variance on IT Contractors. Positive = overspend, often backfilling vacancies.
+	measure 'IT Contractors Underlying Variance' = CALCULATE([Underlying Variance], KEEPFILTERS('Cost Category'[Category] = "IT Contractors"))
+		displayFolder: 3. Run Costs
+		lineageTag: 4efd7961-ea1f-4183-863e-4ea650c8ecb7
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Actual cost of technology projects (AC) in the selected currency.
+	measure 'Project Actual Cost' =
+			IF(
+				[Is Local Currency],
+				IF(HASONEVALUE(Entity[Currency]), [Project Actual Cost LC]),
+				[Project Actual Cost cGBP]
+			)
+		displayFolder: 4. Delivery
+		lineageTag: 099c1148-18bc-47f4-89c6-e45801862e97
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Earned value (EV): the budgeted cost of the work actually completed.
+	measure 'Earned Value' =
+			IF(
+				[Is Local Currency],
+				IF(HASONEVALUE(Entity[Currency]), [Earned Value LC]),
+				[Earned Value cGBP]
+			)
+		displayFolder: 4. Delivery
+		lineageTag: f722c4de-256e-4c8f-8c77-e2de85c2bb0c
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Planned value (PV): the budgeted cost of the work scheduled to date.
+	measure 'Planned Value' =
+			IF(
+				[Is Local Currency],
+				IF(HASONEVALUE(Entity[Currency]), [Planned Value LC]),
+				[Planned Value cGBP]
+			)
+		displayFolder: 4. Delivery
+		lineageTag: 93b18b32-862a-41a3-a58c-bf144272523b
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Cost variance: EV minus AC. Negative = the work done cost more than planned.
+	measure 'Cost Variance (EV - AC)' = IF(NOT ISBLANK([Earned Value]), [Earned Value] - [Project Actual Cost])
+		displayFolder: 4. Delivery
+		lineageTag: a9516e1d-ab9f-42e1-b920-d07846652868
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Cost Performance Index = EV ÷ AC (value earned per £1 spent). Below 1 = over cost. Currency-neutral.
+	measure CPI = DIVIDE([Earned Value cGBP], [Project Actual Cost cGBP])
+		formatString: 0.00
+		displayFolder: 4. Delivery
+		lineageTag: aa467574-0ce1-4cb3-8251-009749aee725
+
+	/// Schedule Performance Index = EV ÷ PV. Below 1 = behind schedule.
+	measure SPI = DIVIDE([Earned Value cGBP], [Planned Value cGBP])
+		formatString: 0.00
+		displayFolder: 4. Delivery
+		lineageTag: abc21a01-36f6-415c-b858-7c55142512b8
+
+	/// Cumulative CPI from project start to the end of the selected period, ignoring the period start.
+	measure 'CPI (project to date)' =
+			VAR periodEnd = MAX('Date'[Date])
+			RETURN
+				CALCULATE([CPI], REMOVEFILTERS('Date'), 'Date'[Date] <= periodEnd)
+		formatString: 0.00
+		displayFolder: 4. Delivery
+		lineageTag: 1a30ed8c-4fcc-4df5-8404-6a38e4d9817e
+
+	/// Story points accepted as done. Team-specific relative estimates: do not compare across teams.
+	measure 'Story Points Delivered' = SUM('Project Delivery'[Story Points Delivered])
+		formatString: #,0
+		displayFolder: 4. Delivery
+		lineageTag: a7fdd566-a3df-4a1a-adf4-7d21caef58cb
+
+	/// Project actual cost ÷ story points delivered. Shown for comparison only; it is NOT a recommended efficiency measure (see CPI).
+	measure 'Cost per Story Point' = DIVIDE([Project Actual Cost], [Story Points Delivered])
+		displayFolder: 4. Delivery
+		lineageTag: 43edea57-3806-4be2-b5f6-2ecb7756da09
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// One-paragraph summary of budget performance in the selected currency and Units: reported variance, underlying variance at budget rates and the FX effect (cGBP only), and the largest category over budget.
+	measure Headline =
+			VAR lc = [Is Local Currency]
+			VAR sym = IF(lc, SELECTEDVALUE(Entity[Currency Symbol], ""), "£")
+			VAR unit = SELECTEDVALUE(Scale[Scale], "Units")
+			VAR pickOne = "Local currency needs one country: pick it in Region › country, or set Currency to cGBP."
+			VAR act = [Actual]
+			VAR bud = [Budget]
+			VAR reported = act - bud
+			VAR underlying = [Underlying Variance]
+			VAR fx = [FX Translation Impact cGBP]
+			VAR drivers = ADDCOLUMNS(VALUES('Cost Category'[Category]), "@u", [Underlying Variance])
+			VAR topOver = TOPN(1, drivers, [@u], DESC)
+			VAR topName = CONCATENATEX(topOver, 'Cost Category'[Category], ", ")
+			VAR topVal = SUMX(topOver, [@u])
+			VAR scenario = IF([Rate Scenario Selected] <> "Actual" && NOT lc, "[" & [Rate Scenario Selected] & " rates] ")
+			RETURN
+				SWITCH(
+					TRUE(),
+					lc && NOT HASONEVALUE(Entity[Currency]), pickOne,
+					ISBLANK(act), BLANK(),
+					scenario & "IT spend is " & sym & SWITCH(unit, "Millions", FORMAT(ABS(act) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(act) / 1000, "#,0") & "K", FORMAT(ABS(act), "#,0")) & ", " & sym & SWITCH(unit, "Millions", FORMAT(ABS(reported) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(reported) / 1000, "#,0") & "K", FORMAT(ABS(reported), "#,0")) & " "
+						& IF(reported > 0, "over", "under") & " budget" & IF(NOT lc, " as reported") & " ("
+						& FORMAT(DIVIDE(reported, bud), "+0.0%;-0.0%") & "). "
+						& IF(
+							NOT lc,
+							"At budget exchange rates it is " & sym & SWITCH(unit, "Millions", FORMAT(ABS(underlying) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(underlying) / 1000, "#,0") & "K", FORMAT(ABS(underlying), "#,0")) & " " & IF(underlying > 0, "OVER", "under") & " budget"
+								& IF(
+									ABS(fx) < 50000,
+									"; FX had no material effect. ",
+									": FX translation " & IF(fx < 0, "lowered", "raised") & " reported spend by " & "£" & SWITCH(unit, "Millions", FORMAT(ABS(fx) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(fx) / 1000, "#,0") & "K", FORMAT(ABS(fx), "#,0")) & ". "
+								)
+						)
+						& IF(
+							topVal > 0,
+							"Largest " & IF(NOT lc, "underlying ") & "pressure: " & topName & " (+" & UNICHAR(8288) & sym & SWITCH(unit, "Millions", FORMAT(ABS(topVal) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(topVal) / 1000, "#,0") & "K", FORMAT(ABS(topVal), "#,0")) & ").",
+							"No cost category is over budget."
+						)
+				)
+		displayFolder: 5. Narrative
+		lineageTag: dd86505d-5cbc-41f9-aa8b-cca30227ca32
+
+	/// One-paragraph summary of licence shelfware in the selected currency and Units: unused cost, the worst product, its utilisation and next renewal date.
+	measure 'Licence Headline' =
+			VAR lc = [Is Local Currency]
+			VAR sym = IF(lc, SELECTEDVALUE(Entity[Currency Symbol], ""), "£")
+			VAR unit = SELECTEDVALUE(Scale[Scale], "Units")
+			VAR pickOne = "Local currency needs one country: pick it in Region › country, or set Currency to cGBP."
+			VAR unusedTotal = [Unused Licence Cost]
+			VAR products = FILTER(ADDCOLUMNS(VALUES(Product[Product]), "@u", [Unused Licence Cost]), NOT ISBLANK([@u]))
+			VAR top1 = TOPN(1, products, [@u], DESC)
+			VAR p = CONCATENATEX(top1, Product[Product], ", ")
+			VAR u = SUMX(top1, [@u])
+			VAR util = CALCULATE([Licence Utilisation %], Product[Product] = p)
+			VAR renew = CALCULATE(MAX(Product[Next Renewal Date]), Product[Product] = p)
+			RETURN
+				SWITCH(
+					TRUE(),
+					lc && NOT HASONEVALUE(Entity[Currency]), pickOne,
+					ISBLANK(unusedTotal), "No licence data in the current selection.",
+					sym & SWITCH(unit, "Millions", FORMAT(ABS(unusedTotal) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(unusedTotal) / 1000, "#,0") & "K", FORMAT(ABS(unusedTotal), "#,0")) & " of licence spend paid for seats nobody used ("
+						& FORMAT(1 - [Licence Utilisation %], "0%") & " of seat-months idle). Largest: " & p & ", "
+						& sym & SWITCH(unit, "Millions", FORMAT(ABS(u) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(u) / 1000, "#,0") & "K", FORMAT(ABS(u), "#,0")) & " unused at " & FORMAT(util, "0%") & " utilisation; next renewal "
+						& FORMAT(renew, "mmm yyyy") & ", the point to right-size the seats."
+				)
+		displayFolder: 5. Narrative
+		lineageTag: 7425aaba-7096-4db1-abf0-dd8156e7cf32
+
+	/// One-paragraph summary of project value for money, contrasting CPI with cost per story point (in the selected currency).
+	measure 'Delivery Headline' =
+			VAR lc = [Is Local Currency]
+			VAR sym = IF(lc, SELECTEDVALUE(Entity[Currency Symbol], ""), "£")
+			VAR unit = SELECTEDVALUE(Scale[Scale], "Units")
+			VAR pickOne = "Local currency needs one country: pick it in Region › country, or set Currency to cGBP."
+			VAR projects =
+				FILTER(
+					ADDCOLUMNS(VALUES(Project[Project]), "@cpi", [CPI], "@cpsp", [Cost per Story Point]),
+					NOT ISBLANK([@cpi]) && NOT ISBLANK([@cpsp])
+				)
+			VAR worst = TOPN(1, projects, [@cpi], ASC)
+			VAR cheapest = TOPN(1, projects, [@cpsp], ASC)
+			VAR worstName = CONCATENATEX(worst, Project[Project], ", ")
+			VAR cheapestName = CONCATENATEX(cheapest, Project[Project], ", ")
+			VAR cheapestCost = sym & FORMAT(SUMX(cheapest, [@cpsp]), "#,0")
+			VAR portfolioCPI = [CPI]
+			RETURN
+				SWITCH(
+					TRUE(),
+					lc && NOT HASONEVALUE(Entity[Currency]), pickOne,
+					COUNTROWS(projects) = 0, "No change projects in the current selection.",
+					COUNTROWS(projects) = 1,
+					worstName & ": CPI " & FORMAT(portfolioCPI, "0.00") & ", so each " & sym & "1 spent earned " & sym
+						& FORMAT(portfolioCPI, "0.00") & " of planned work; cost per story point " & cheapestCost & ".",
+					"Portfolio CPI is " & FORMAT(portfolioCPI, "0.00") & ": each " & sym & "1 spent earned " & sym
+						& FORMAT(portfolioCPI, "0.00") & " of planned work. Weakest: " & worstName & " (CPI "
+						& FORMAT(SUMX(worst, [@cpi]), "0.00") & ")"
+						& IF(
+							worstName = cheapestName,
+							". Yet it has the LOWEST cost per story point (" & cheapestCost
+								& "): cost per story point would rank the most over-running project as the most efficient.",
+							"; lowest cost per story point: " & cheapestName & " (" & cheapestCost & ")."
+						)
+				)
+		displayFolder: 5. Narrative
+		lineageTag: dab0cce5-0b70-43bc-9669-bd3cfd31fce1
+
+	/// Overrun on projects where actual cost exceeds earned value (AC − EV, summed only over over-running projects), in cGBP.
+	measure 'Project Overrun cGBP' =
+			SUMX(
+				VALUES(Project[ProjectKey]),
+				VAR ac = [Project Actual Cost cGBP]
+				VAR ev = [Earned Value cGBP]
+				RETURN IF(NOT ISBLANK(ev) && ac > ev, ac - ev)
+			)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 83f519b4-7904-4076-b157-6c38733a9a82
+
+	/// Money at stake for each recommended action in the selected period (cGBP): unused licence cost, cloud overspend at budget FX, net premium of contractors over budgeted IT employees, and project overruns (AC − EV).
+	measure 'Value at Stake' =
+			SUMX(
+				VALUES('Recommended Action'[ActionKey]),
+				SWITCH(
+					'Recommended Action'[ActionKey],
+					"A1", [Unused Licence Cost cGBP],
+					"A2", MAX(0, CALCULATE([Underlying Variance cGBP], KEEPFILTERS('Cost Category'[Category] = "Cloud Services"))),
+					"A3", MAX(0, CALCULATE([Underlying Variance cGBP], KEEPFILTERS('Cost Category'[Category] IN {"IT Contractors", "IT Employees"}))),
+					"A4", [Project Overrun cGBP]
+				)
+			)
+		displayFolder: 6. Executive
+		lineageTag: 65f559e2-820c-4fbf-825b-c26417838f38
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Share of total IT spend that is at stake across the recommended actions.
+	measure 'Value at Stake % of Spend' = DIVIDE([Value at Stake], [Actual cGBP])
+		formatString: 0.0%
+		displayFolder: 6. Executive
+		lineageTag: ba110a91-02ba-4d3f-9b0a-070c06084f2e
+
+	/// Project status, shown only for projects with spend in the selected period. Keeps closed projects off the scorecard.
+	measure 'Project Status' = IF(NOT ISBLANK([Project Actual Cost cGBP]), SELECTEDVALUE(Project[Status]))
+		displayFolder: 4. Delivery
+		lineageTag: 8b315254-4c14-43bf-ae22-74b08f0d13c1
+
+	/// Executive summary in one paragraph (cGBP, in the selected Units): budget position with and without FX, money at stake by action, and portfolio delivery performance.
+	measure 'Executive Headline' =
+			VAR unit = SELECTEDVALUE(Scale[Scale], "Units")
+			VAR act = [Actual cGBP]
+			VAR bud = [Budget cGBP]
+			VAR reportedPct = DIVIDE(act - bud, bud)
+			VAR underlying = [Underlying Variance cGBP]
+			VAR fx = [FX Translation Impact cGBP]
+			VAR stake = CALCULATE([Value at Stake], REMOVEFILTERS('Recommended Action'))
+			VAR a1 = CALCULATE([Value at Stake], 'Recommended Action'[ActionKey] = "A1")
+			VAR a2 = CALCULATE([Value at Stake], 'Recommended Action'[ActionKey] = "A2")
+			VAR a3 = CALCULATE([Value at Stake], 'Recommended Action'[ActionKey] = "A3")
+			VAR a4 = CALCULATE([Value at Stake], 'Recommended Action'[ActionKey] = "A4")
+			VAR position =
+				IF(
+					ABS(reportedPct) < 0.01,
+					"looks on budget (" & FORMAT(reportedPct, "+0.0%;-0.0%") & " as reported)",
+					"is " & FORMAT(ABS(reportedPct), "0.0%") & IF(reportedPct > 0, " over", " under") & " budget as reported"
+				)
+			RETURN
+				IF(
+					NOT ISBLANK(act),
+					"IT spend of " & "£" & SWITCH(unit, "Millions", FORMAT(ABS(act) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(act) / 1000, "#,0") & "K", FORMAT(ABS(act), "#,0")) & " " & position & ", but at budget exchange rates it is "
+						& "£" & SWITCH(unit, "Millions", FORMAT(ABS(underlying) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(underlying) / 1000, "#,0") & "K", FORMAT(ABS(underlying), "#,0")) & " " & IF(underlying > 0, "OVER", "under") & " budget: FX "
+						& IF(fx < 0, "flattered", "penalised") & " the result by " & "£" & SWITCH(unit, "Millions", FORMAT(ABS(fx) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(fx) / 1000, "#,0") & "K", FORMAT(ABS(fx), "#,0")) & ". "
+						& "£" & SWITCH(unit, "Millions", FORMAT(ABS(stake) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(stake) / 1000, "#,0") & "K", FORMAT(ABS(stake), "#,0")) & " is actionable: licence shelfware " & "£" & SWITCH(unit, "Millions", FORMAT(ABS(a1) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(a1) / 1000, "#,0") & "K", FORMAT(ABS(a1), "#,0"))
+						& ", cloud overrun " & "£" & SWITCH(unit, "Millions", FORMAT(ABS(a2) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(a2) / 1000, "#,0") & "K", FORMAT(ABS(a2), "#,0")) & ", contractor premium " & "£" & SWITCH(unit, "Millions", FORMAT(ABS(a3) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(a3) / 1000, "#,0") & "K", FORMAT(ABS(a3), "#,0"))
+						& ", project overruns " & "£" & SWITCH(unit, "Millions", FORMAT(ABS(a4) / 1000000, "#,0.00") & "M", "Thousands", FORMAT(ABS(a4) / 1000, "#,0") & "K", FORMAT(ABS(a4), "#,0")) & ". Change portfolio CPI is " & FORMAT([CPI], "0.00") & "."
+				)
+		displayFolder: 6. Executive
+		lineageTag: a66a1c75-be2d-460a-80d9-5506e9aa2002
+
+	/// Year-on-year change at constant currency: this year's actuals re-translated at last year's month-end rates (Prior year rate scenario), so exchange-rate moves do not distort growth.
+	measure 'YoY Change % Constant FX' = CALCULATE([YoY Change %], 'Rate Scenario'[Scenario] = "Prior year")
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 6bf0d7fd-5722-449a-b611-16e4048fedcf
+
+	/// FALSE when the context filters by vendor. Budget is set by department, entity, category and project, not by vendor, so budget and variance measures return blank there instead of a misleading total.
+	measure 'Budget Grain' = NOT ISCROSSFILTERED(Vendor)
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: d67a41cd-e88e-44af-862f-c67c46a01909
+
+	/// Share of IT spend on change (technology projects) rather than running the business. A CIO steering metric: too low means no investment, too high means run costs are starved.
+	measure 'Change Spend %' =
+			DIVIDE(
+				CALCULATE([Actual], KEEPFILTERS('Cost Category'[Category Group] = "Change")),
+				CALCULATE([Actual], REMOVEFILTERS('Cost Category'))
+			)
+		formatString: 0.0%
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 38d0aecd-5bca-4511-827c-6b75d0986d22
+
+	/// Full fiscal-year budget for the fiscal year in context, whatever months are selected.
+	measure 'Full-year Budget' =
+			VAR fy = MAX('Date'[Fiscal Year])
+			RETURN
+				CALCULATE([Budget], REMOVEFILTERS('Date'), 'Date'[Fiscal Year] = fy)
+		displayFolder: 1. Spend vs Budget
+		lineageTag: f3efdce5-f945-4533-ba4e-7a2c25bccf3b
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Year-end outturn forecast as at the latest month in context: actual year to date plus budget for the remaining months of the fiscal year. Plotted by month it shows how the year-end forecast moved; for a full year it equals the actual.
+	measure Outturn =
+			VAR m = MAX('Date'[Month Start])
+			VAR fy = MAX('Date'[Fiscal Year])
+			VAR ytd = CALCULATE([Actual], REMOVEFILTERS('Date'), 'Date'[Fiscal Year] = fy, 'Date'[Month Start] <= m)
+			VAR rest = CALCULATE([Budget], REMOVEFILTERS('Date'), 'Date'[Fiscal Year] = fy, 'Date'[Month Start] > m)
+			RETURN
+				IF(NOT ISBLANK(ytd), ytd + rest)
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 5df38dfc-1043-4074-9c37-b03f1087eee6
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Forecast year-end variance: outturn minus full-year budget. Positive = forecast overspend.
+	measure 'Outturn vs Budget' = IF(NOT ISBLANK([Outturn]), [Outturn] - [Full-year Budget])
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 99bc39b7-fde8-438d-8c9a-b8a80418ef93
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Project actual cost from project start to the end of the selected period.
+	measure 'Project Actual Cost (project to date)' =
+			VAR periodEnd = MAX('Date'[Date])
+			RETURN
+				CALCULATE([Project Actual Cost cGBP], REMOVEFILTERS('Date'), 'Date'[Date] <= periodEnd)
+		formatString: £#,0
+		isHidden
+		displayFolder: 9. Base
+		lineageTag: 0b8575c8-2574-4081-aa9a-754a6a40eb91
+
+	/// Approved total budget (BAC) of the projects with spend in the selected period, in GBP at plan rates. Always cGBP, also in the local-currency view.
+	measure 'Budget at Completion' =
+			(
+				SUMX(
+					FILTER(VALUES(Project[ProjectKey]), NOT ISBLANK([Project Actual Cost cGBP])),
+					CALCULATE(MAX(Project[Budget at Completion]))
+				)
+			)
+		displayFolder: 4. Delivery
+		lineageTag: f7c06294-4a97-47ad-8fb7-a1f9660da195
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Estimate at completion (EAC): what each project will cost by the end. In-flight projects: BAC ÷ project-to-date CPI (if cost performance continues). Projects past their planned end month at the period end: actual cost to date. Always cGBP, also in the local-currency view.
+	measure 'Estimate at Completion' =
+			VAR periodEnd = MAX('Date'[Date])
+			RETURN
+			(
+				SUMX(
+					FILTER(VALUES(Project[ProjectKey]), NOT ISBLANK([Project Actual Cost cGBP])),
+					VAR bac = CALCULATE(MAX(Project[Budget at Completion]))
+					VAR isClosed = CALCULATE(MAX(Project[Planned End Month])) <= periodEnd
+					RETURN
+						IF(
+							NOT ISBLANK(bac),
+							IF(isClosed, [Project Actual Cost (project to date)], DIVIDE(bac, [CPI (project to date)]))
+						)
+				)
+			)
+		displayFolder: 4. Delivery
+		lineageTag: 83927fc8-830f-4019-88cc-0798a44f52df
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Forecast overrun: EAC minus BAC. Positive = the project is forecast to finish over its approved budget.
+	measure 'Forecast Overrun' = IF(NOT ISBLANK([Estimate at Completion]), [Estimate at Completion] - [Budget at Completion])
+		displayFolder: 4. Delivery
+		lineageTag: bdec0746-a672-45d8-8c93-55c05225251d
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Short context for visual titles: fiscal year, plus local currency or the FX rate scenario when they are not the default (cGBP at Actual rates).
+	measure 'Title Context' =
+			SELECTEDVALUE('Date'[Fiscal Year], "Selected years")
+				& IF([Is Local Currency], " · local currency")
+				& IF([Rate Scenario Selected] <> "Actual" && NOT [Is Local Currency], " · " & [Rate Scenario Selected] & " rates")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 9777f877-8115-443b-ad9d-dd849921d984
+
+	/// Title for the page-1 matrix: follows the Analyse by selection.
+	measure 'Title Matrix' = "Spend vs budget by " & [Selected Analyse By]
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 1e8e1923-d56d-40b1-a95a-45599e74989a
+
+	/// Title for the page-2 explorer: follows the Show and Analyse by selections.
+	measure 'Title Explorer' = [Selected Show] & " by " & [Selected Analyse By]
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 0339d0df-eb46-4e4a-bab2-8f903c7a04bb
+
+	/// Label of the selected Analyse by option. A field parameter's label is grouped by its hidden Fields column, so it is read through both columns (SELECTEDVALUE on the label alone raises a composite-key error).
+	measure 'Selected Analyse By' =
+			VAR sel = SUMMARIZE('Analyse By', 'Analyse By'[Analyse By], 'Analyse By'[Analyse By Fields])
+			RETURN
+				IF(COUNTROWS(sel) = 1, MAXX(sel, 'Analyse By'[Analyse By]), "Department")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: dd64d738-3f4d-47bb-a1da-4602553ffb50
+
+	/// Label of the selected Show option (read through both field-parameter columns, as above).
+	measure 'Selected Show' =
+			VAR sel = SUMMARIZE(Show, Show[Show], Show[Show Fields])
+			RETURN
+				IF(COUNTROWS(sel) = 1, MAXX(sel, Show[Show]), "Actual")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 74a7b6bc-1543-4fa0-8d39-a3b2e0a86dcb
+
+	/// Subtitle context for visuals: the selected fiscal year, plus local currency or the FX rate scenario when not the default.
+	measure 'Subtitle Context' = [Title Context]
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: bd4fa052-988c-43ce-8758-76c9aca6d0a3
+
+	/// Subtitle for the page-1 matrix: context plus the colour key.
+	measure 'Subtitle Matrix' = [Title Context] & " · at budget FX · coloured when " & LOWER(SELECTEDVALUE('Variance Flag'[Flag], "Over 2% and £50K"))
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 4ed268fa-6db5-487e-85fb-c5d85fa7ec12
+
+	/// Subtitle for the page-2 explorer: context, plus a note when the Show / Analyse by combination is empty or easy to misread.
+	measure 'Subtitle Explorer' =
+			VAR dim = [Selected Analyse By]
+			VAR show = [Selected Show]
+			VAR note =
+				SWITCH(
+					TRUE(),
+					dim = "Vendor" && show IN { "Variance", "Variance %" }, "no budget by vendor, so no variance",
+					show = "Per FTE" && dim IN { "Category", "Run/Change", "Vendor", "Project" }, "per FTE = this spend ÷ all employees",
+					show = "Change %" && dim IN { "Category", "Run/Change", "Project" }, "each item is all run or all change",
+					BLANK()
+				)
+			RETURN
+				[Title Context] & IF(NOT ISBLANK(note), " · " & note)
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 2ecfe586-d460-427c-98ac-e56192ee388c
+
+	/// Run-rate outturn as at the latest month in context: actual year to date grossed up to 12 months at the year-to-date monthly average, from the third month of the year (earlier it is mostly seasonality). An alternative to the budget-based outturn when spend is not tracking the budget profile.
+	measure 'Outturn (Run Rate)' =
+			VAR m = MAX('Date'[Month Start])
+			VAR fy = MAX('Date'[Fiscal Year])
+			VAR ytdTable = CALCULATETABLE(VALUES('Date'[Month Start]), REMOVEFILTERS('Date'), 'Date'[Fiscal Year] = fy, 'Date'[Month Start] <= m)
+			VAR ytd = CALCULATE([Actual], REMOVEFILTERS('Date'), 'Date'[Fiscal Year] = fy, 'Date'[Month Start] <= m)
+			VAR months = COUNTROWS(ytdTable)
+			RETURN
+				IF(NOT ISBLANK(ytd) && months >= 3, DIVIDE(ytd, months) * 12)
+		displayFolder: 1. Spend vs Budget
+		lineageTag: df765952-c6d3-4932-9e64-065e15329570
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Run-rate year-end variance: run-rate outturn minus full-year budget. Positive = forecast overspend.
+	measure 'Run Rate vs Budget' = IF(NOT ISBLANK([Outturn (Run Rate)]), [Outturn (Run Rate)] - [Full-year Budget])
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 3460d489-7dc3-45fa-9190-82f973ace5e7
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Budget holder for the department in context, or "Several budget holders" when more than one department is in context.
+	measure 'Budget Holder' = SELECTEDVALUE(Department[Budget Holder], "Several budget holders")
+		displayFolder: 1. Spend vs Budget
+		lineageTag: f00c5d4b-943d-4949-9c07-a66e03b8c577
+
+	/// Midpoint of the illustrative peer range for IT spend per FTE (assumption, see the Assumption table).
+	measure 'Benchmark Spend per FTE' =
+			AVERAGEX(
+				FILTER(Assumption, Assumption[Assumption] IN { "Benchmark IT spend per FTE (low)", "Benchmark IT spend per FTE (high)" }),
+				Assumption[Value]
+			)
+		formatString: £#,0
+		displayFolder: 2. Per Employee
+		lineageTag: 7fba4663-41d0-4506-8c51-c56fda050837
+
+	/// IT spend per FTE (cGBP) against the benchmark midpoint. Positive = spending more per employee than the illustrative peer midpoint.
+	measure 'Spend per FTE vs Benchmark %' =
+			VAR perFte = CALCULATE([IT Spend per FTE], 'Reporting Currency'[Currency View] = "cGBP")
+			RETURN
+				DIVIDE(perFte, [Benchmark Spend per FTE]) - 1
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 2. Per Employee
+		lineageTag: fe04eeae-3246-4479-8e33-27e48d150379
+
+	/// Target share of IT spend on change (assumption: 30%, the 70/30 run/change rule of thumb).
+	measure 'Change Share Target' = CALCULATE(MAX(Assumption[Value]), Assumption[Assumption] = "Change share target")
+		formatString: 0%
+		displayFolder: 1. Spend vs Budget
+		lineageTag: 866dae38-de72-4ad9-af7a-35954e8790a1
+
+	/// Colour for the change share: amber when below target.
+	measure 'Change Share Colour' = IF([Change Spend %] < [Change Share Target], "#B26B00", "#1F2933")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 186b47b5-3461-4215-a604-aafb7d664135
+
+	/// Technology project spend assumed capitalisable (capex), at the capitalisation rate in the Assumption table.
+	measure 'Capitalised Project Spend' = [Project Actual Cost] * CALCULATE(MAX(Assumption[Value]), Assumption[Assumption] = "Project capitalisation rate")
+		displayFolder: 4. Delivery
+		lineageTag: e8213d44-e063-41bb-bddf-da9f50d87702
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// IT spend hitting the P&L this period: actual spend minus capitalised project spend.
+	measure 'Opex Impact' = [Actual] - [Capitalised Project Spend]
+		displayFolder: 1. Spend vs Budget
+		lineageTag: c9f067c0-84e5-4b00-ad3f-129306c878fc
+
+		formatStringDefinition = VAR sym = IF(SELECTEDVALUE('Reporting Currency'[Currency View], "cGBP") = "Local currency", SELECTEDVALUE(Entity[Currency Symbol], ""), "£") RETURN """" & sym & """#,0;-""" & sym & """#,0"
+
+	/// Value the actions can realistically recover: value at stake x the recovery % assumed for each action.
+	measure 'Recoverable Value' =
+			SUMX(
+				VALUES('Recommended Action'[ActionKey]),
+				[Value at Stake] * CALCULATE(MAX('Recommended Action'[Recovery %]))
+			)
+		displayFolder: 6. Executive
+		lineageTag: fdf02a4f-05c3-43b6-88ea-e3563d3d6a78
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Recoverable value that lands within 12 months of the period end. Licences count only products renewing in that window; other actions use their assumed 12-month share.
+	measure 'Realisable in 12 Months' =
+			VAR periodEnd = MAX('Date'[Date])
+			RETURN
+				SUMX(
+					VALUES('Recommended Action'[ActionKey]),
+					VAR rec = CALCULATE(MAX('Recommended Action'[Recovery %]))
+					RETURN
+						IF(
+							'Recommended Action'[ActionKey] = "A1",
+							CALCULATE(
+								[Unused Licence Cost cGBP],
+								KEEPFILTERS(FILTER(ALL(Product[Next Renewal Date]), Product[Next Renewal Date] <= EDATE(periodEnd, 12)))
+							) * rec,
+							[Value at Stake] * rec * CALCULATE(MAX('Recommended Action'[Within 12 Months %]))
+						)
+				)
+		displayFolder: 6. Executive
+		lineageTag: c0a9ec35-4b6b-4e2c-9a9c-b6b5628ee712
+
+		formatStringDefinition = """£""#,0;-""£""#,0"
+
+	/// Page-3 scatter: x-axis maximum = largest cost per story point + 20% headroom.
+	measure 'Scatter X Max' = MAXX(VALUES(Project[Project]), [Cost per Story Point]) * 1.2
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: fc19046e-c134-493e-8b90-7925784ee470
+
+	/// Page-3 scatter: y-axis minimum = lowest CPI - 0.05.
+	measure 'Scatter Y Min' = MINX(FILTER(VALUES(Project[Project]), NOT ISBLANK([CPI])), [CPI]) - 0.05
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 89d50798-9f1a-40fa-91ac-7f27e1a3f142
+
+	/// Page-3 scatter: y-axis maximum = highest CPI + 0.05.
+	measure 'Scatter Y Max' = MAXX(VALUES(Project[Project]), [CPI]) + 0.05
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 6fd822f0-e6d4-47e1-8092-f2e97e85564a
+
+	/// Colour for cost variance to date (EV - AC): red = overrun (EV below AC), green = ahead.
+	measure 'Cost Variance Colour' = IF([Cost Variance (EV - AC)] < 0, "#B3261E", "#1B7F3B")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 56ac5458-e0af-4e82-85cb-e9a1a06b76e0
+
+	/// Colour for forecast overrun (EAC - BAC): red = forecast over budget, green = under.
+	measure 'Overrun Colour' = VAR o = [Forecast Overrun] RETURN IF(NOT ISBLANK(o), IF(o > 0, "#B3261E", "#1B7F3B"))
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 8fe59f4d-2289-44de-8602-1b6660c469a5
+
+	/// Colour for schedule performance index: red below 0.90, amber below 0.97, green otherwise (same bands as CPI).
+	measure 'SPI Colour' = VAR c = [SPI] RETURN SWITCH(TRUE(), ISBLANK(c), BLANK(), c < 0.9, "#B3261E", c < 0.97, "#B26B00", "#1B7F3B")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: b7adf0ec-deaa-49f2-b1df-a4089dc4421b
+
+	/// Colour for cloud variance at budget FX: red/green beyond the selected Highlight % threshold, dark text within it.
+	measure 'Cloud Variance Colour' = VAR v = [Cloud Underlying Variance %] VAR pct = SELECTEDVALUE('Variance Flag'[Flag %], 0.02) RETURN SWITCH(TRUE(), ISBLANK(v), BLANK(), v > pct, "#B3261E", v < -pct, "#1B7F3B", "#1F2933")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: f32e9122-88e2-4287-a96b-4a23145b1bca
+
+	/// Colour for contractor variance at budget FX: red/green beyond the selected Highlight amount, dark text within it.
+	measure 'Contractor Variance Colour' = VAR v = [IT Contractors Underlying Variance] VAR amt = SELECTEDVALUE('Variance Flag'[Flag Amount], 50000) RETURN SWITCH(TRUE(), ISBLANK(v), BLANK(), v > amt, "#B3261E", v < -amt, "#1B7F3B", "#1F2933")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 7abfcfc0-2901-416e-ad8b-32f29bd9dbc9
+
+	/// Colour for IT spend per FTE against the benchmark band: red above the high end, amber below the low end (under-investment), dark text inside the band.
+	measure 'Benchmark Colour' = VAR perFte = CALCULATE([IT Spend per FTE], 'Reporting Currency'[Currency View] = "cGBP") VAR lo = CALCULATE(MAX(Assumption[Value]), Assumption[Assumption] = "Benchmark IT spend per FTE (low)") VAR hi = CALCULATE(MAX(Assumption[Value]), Assumption[Assumption] = "Benchmark IT spend per FTE (high)") RETURN SWITCH(TRUE(), ISBLANK(perFte), BLANK(), perFte > hi, "#B3261E", perFte < lo, "#B26B00", "#1F2933")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 40fa4808-1987-4b81-a14e-aef371bd5de7
+
+	/// Colour for project status: blue = in flight, grey = closed.
+	measure 'Status Colour' = SWITCH([Project Status], "In flight", "#2A78D6", "Closed", "#5F6B76")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: be10b518-ad6b-44fd-aaac-6d8aeab6d445
+
+	/// Colour for GBP vs plan rate: green when GBP is more than 2% stronger than plan (overseas costs cost less in GBP), red when more than 2% weaker.
+	measure 'FX vs Plan Colour' = VAR g = [GBP vs Plan %] RETURN SWITCH(TRUE(), ISBLANK(g), BLANK(), g > 0.02, "#1B7F3B", g < -0.02, "#B3261E", "#1F2933")
+		isHidden
+		displayFolder: 8. Helpers
+		lineageTag: 5752fff8-e361-48d3-a8cd-1a7dadd42b3f
+
+	column Placeholder
+		dataType: string
+		isHidden
+		lineageTag: ee0e6499-cdc0-43ac-9c79-db03cdf584ac
+		summarizeBy: none
+		sourceColumn: Placeholder
+
+	partition _Measures = m
+		mode: import
+		source =
+				let
+					Source = #table(type table [Placeholder = text], {})
+				in
+					Source
+

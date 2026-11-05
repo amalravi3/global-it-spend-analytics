@@ -1,0 +1,47 @@
+model Model
+	culture: en-GB
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-GB
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+annotation PBI_QueryOrder = ["DataFolder","fnLoadCsv","Date","Entity","Department","Cost Category","Vendor","Product","Project","FX Rate","IT Spend","IT Budget","Headcount","Licence","Project Delivery","Reporting Currency","Rate Scenario","Bridge Step","Recommended Action","Variance Flag","Assumption","Security Map","Region Security Map","_Measures"]
+
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table _Measures
+ref table Date
+ref table Entity
+ref table Department
+ref table 'Cost Category'
+ref table Vendor
+ref table Product
+ref table Project
+ref table 'FX Rate'
+ref table 'Reporting Currency'
+ref table 'Rate Scenario'
+ref table 'Bridge Step'
+ref table 'Recommended Action'
+ref table 'IT Spend'
+ref table 'IT Budget'
+ref table Headcount
+ref table Licence
+ref table 'Project Delivery'
+ref table 'Analyse By'
+ref table Show
+ref table 'Security Map'
+ref table Scale
+ref table 'Variance Flag'
+ref table Assumption
+ref table 'Region Security Map'
+
+ref role 'Department Budget Holder'
+ref role 'All Access'
+ref role 'Regional Manager'
+
+ref cultureInfo en-GB
+

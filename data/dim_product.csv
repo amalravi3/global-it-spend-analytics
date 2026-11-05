@@ -1,0 +1,9 @@
+ProductKey,Product,Vendor,ListPriceGBPPerSeatMonth,NextRenewalDate
+PR01,Microsoft 365 E3,Microsoft,30.0,2026-06-01
+PR02,Salesforce Sales Cloud,Salesforce,120.0,2026-09-01
+PR03,ServiceNow ITSM,ServiceNow,85.0,2027-01-01
+PR04,Atlassian Jira & Confluence,Atlassian,12.0,2026-10-01
+PR05,Adobe Creative Cloud,Adobe,70.0,2026-08-01
+PR06,Zoom Workplace,Zoom,15.0,2026-07-01
+PR07,Tableau Creator,Salesforce,60.0,2026-11-01
+PR08,GitHub Enterprise,GitHub,17.0,2027-02-01

@@ -1,0 +1,32 @@
+/// Row-level security mapping: which budget holder (user principal name) may see which department. Used only by the Department Budget Holder role.
+table 'Security Map'
+	isHidden
+	lineageTag: 063df56c-1259-457c-ac97-4bcb2d10e54a
+
+	/// Sign-in name (UPN) of the budget holder.
+	column UserPrincipalName
+		dataType: string
+		isHidden
+		lineageTag: 6cc1a68e-1ab6-472d-93e3-5c5f891ad3b7
+		summarizeBy: none
+		sourceColumn: UserPrincipalName
+
+	/// Department the user may see. A user can have several rows.
+	column Department
+		dataType: string
+		isHidden
+		lineageTag: 2f3eea41-73db-41bc-80d8-824ef9ecd31e
+		summarizeBy: none
+		sourceColumn: Department
+
+	partition 'Security Map' = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("security_map.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"UserPrincipalName", type text}, {"Department", type text}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

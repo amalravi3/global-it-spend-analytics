@@ -1,0 +1,52 @@
+/// Business departments that consume IT. Each department's IT spend is what it uses: seats assigned for subscriptions, tagged usage for cloud, sponsorship for projects, and a headcount-based allocation for IT staff.
+table Department
+	lineageTag: 9faed732-e9ee-4c2c-95e9-25a39b2d0634
+
+	column DepartmentKey
+		dataType: string
+		isHidden
+		lineageTag: f6f0f14f-d7ee-4dd8-8fd2-73e23f0459cc
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+	/// Business department, e.g. Finance, Sales & Marketing.
+	column Department
+		dataType: string
+		lineageTag: da3d8ba2-452d-4a46-9826-afbf0da5ad3c
+		summarizeBy: none
+		sourceColumn: Department
+		sortByColumn: 'Sort Order'
+
+	/// Department grouping: Corporate functions, Customer-facing, Operations & Technology.
+	column 'Department Group'
+		dataType: string
+		lineageTag: 4579d0e3-789a-4f3a-aa61-d956cdb32598
+		summarizeBy: none
+		sourceColumn: DepartmentGroup
+
+	column 'Sort Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3e7a711b-05bb-4c47-a8bd-b1e147a0da7e
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+	/// Role accountable for the department's IT spend (a role, not a named person).
+	column 'Budget Holder'
+		dataType: string
+		lineageTag: 3608a9bd-d6b1-4d98-ad22-f59477d58715
+		summarizeBy: none
+		sourceColumn: BudgetHolder
+
+	partition Department = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("dim_department.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"DepartmentKey", type text}, {"Department", type text}, {"DepartmentGroup", type text}, {"SortOrder", Int64.Type}, {"BudgetHolder", type text}})
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

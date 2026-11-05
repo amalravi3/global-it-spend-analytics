@@ -1,0 +1,333 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1997.3442310817966,
+            "y": 446.98743615205228
+          },
+          "nodeIndex": "_Measures",
+          "nodeLineageTag": "a3a93a14-c1d4-4ae7-9649-167152095155",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2281.3442310817964,
+            "y": 520.98743615205228
+          },
+          "nodeIndex": "Analyse By",
+          "nodeLineageTag": "6ea49435-208f-45cc-9ca0-acd573a5c9af",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2565.3442310817964,
+            "y": 508.98743615205228
+          },
+          "nodeIndex": "Bridge Step",
+          "nodeLineageTag": "ddf80b65-002d-466f-b213-51d7e8c9d2fb",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1763.3442310817966,
+            "y": 616.07343568288616
+          },
+          "nodeIndex": "Cost Category",
+          "nodeLineageTag": "63c03e61-29b1-4239-ad02-525cf5eb1a71",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 579.90183757212958,
+            "y": 485.16339308116272
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "890df702-d769-46ba-94ea-7dbcc8af8b7d",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 763.34505218142681,
+            "y": 253.34800802365953
+          },
+          "nodeIndex": "Department",
+          "nodeLineageTag": "57e184cd-2826-4af9-bc0a-72ddcdda3d64",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 629.81883796216857,
+            "y": 838.2464955847297
+          },
+          "nodeIndex": "Entity",
+          "nodeLineageTag": "527810e6-d653-4e58-a2d0-aade51418c47",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1043.262837920212,
+            "y": -50
+          },
+          "nodeIndex": "FX Rate",
+          "nodeLineageTag": "973f4eb8-523d-44f8-91c7-c13270f797fe",
+          "size": {
+            "height": 248,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 290.01395117950779,
+            "y": 677.34991299001831
+          },
+          "nodeIndex": "Headcount",
+          "nodeLineageTag": "43071288-6798-4c58-9d4c-da0bcf2ae5e3",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1208.8380139176149,
+            "y": 519.11859556633681
+          },
+          "nodeIndex": "IT Budget",
+          "nodeLineageTag": "1d93490f-673a-457c-8684-bccb2793a7a1",
+          "size": {
+            "height": 272,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1346.32765950564,
+            "y": 170.11131825592634
+          },
+          "nodeIndex": "IT Spend",
+          "nodeLineageTag": "460c3dd3-4be1-4e76-9d2c-7794a43999bb",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 339.93677459839569,
+            "y": 132.02599577591627
+          },
+          "nodeIndex": "Licence",
+          "nodeLineageTag": "fa071f90-2db6-4bba-9360-3baa244506e5",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": -42.542654825163027
+          },
+          "nodeIndex": "Product",
+          "nodeLineageTag": "51e5f8d3-d578-4f1a-8ef9-f309872a94fe",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1475.9349646145711,
+            "y": 847.97487230410457
+          },
+          "nodeIndex": "Project",
+          "nodeLineageTag": "7a4a6dec-2160-4085-bb04-5295573b7fa1",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 919.03436199815269,
+            "y": 745.0107482599708
+          },
+          "nodeIndex": "Project Delivery",
+          "nodeLineageTag": "acb90d57-f4e9-4bae-9921-d1088fc0b785",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 2849.3442310817964,
+            "y": 520.98743615205228
+          },
+          "nodeIndex": "Rate Scenario",
+          "nodeLineageTag": "62b798aa-be71-4f7d-93bd-b38bae46668c",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3133.3442310817964,
+            "y": 496.98743615205228
+          },
+          "nodeIndex": "Recommended Action",
+          "nodeLineageTag": "2cd7eefd-c67f-44d0-ba18-df9fe2a7a785",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3417.3442310817964,
+            "y": 532.98743615205228
+          },
+          "nodeIndex": "Reporting Currency",
+          "nodeLineageTag": "ee69eec7-dc59-4576-b5e6-47a38a24d436",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3701.3442310817964,
+            "y": 532.98743615205228
+          },
+          "nodeIndex": "Security Map",
+          "nodeLineageTag": "430c2f9a-a8fa-4473-a6eb-d0109c83d11d",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 3985.3442310817964,
+            "y": 520.98743615205228
+          },
+          "nodeIndex": "Show",
+          "nodeLineageTag": "ce1bc8a2-335d-4732-9588-0b09fb93b3ea",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1636.2776424794572,
+            "y": 25.699998928701007
+          },
+          "nodeIndex": "Vendor",
+          "nodeLineageTag": "af753490-6856-4909-8253-ff200a8c377a",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4219.3442310817964,
+            "y": 532.98743615205228
+          },
+          "nodeIndex": "Scale",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4453.3442310817964,
+            "y": 520.98743615205228
+          },
+          "nodeIndex": "Assumption",
+          "nodeLineageTag": "85c8307b-8c30-4f22-a7c1-10550ae0e1e8",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 4737.3442310817964,
+            "y": 508.98743615205228
+          },
+          "nodeIndex": "Variance Flag",
+          "nodeLineageTag": "9492aba4-f5da-4141-a295-13bbc87a5955",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

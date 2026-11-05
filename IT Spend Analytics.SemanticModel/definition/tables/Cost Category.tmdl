@@ -1,0 +1,45 @@
+/// IT cost categories, grouped into Run (technology and people) and Change (technology projects).
+table 'Cost Category'
+	lineageTag: dbd7ddd6-a267-4c19-b4f3-c9e67d5849bb
+
+	column CategoryKey
+		dataType: string
+		isHidden
+		lineageTag: b0095896-a37d-4316-9f12-883590b6eb1d
+		summarizeBy: none
+		sourceColumn: CategoryKey
+
+	/// IT cost category: Software Subscriptions, Cloud Services, Applications & Maintenance, IT Employees, IT Contractors, Technology Projects.
+	column Category
+		dataType: string
+		lineageTag: e429b385-cc0a-4165-b37f-29ae598c5925
+		summarizeBy: none
+		sourceColumn: Category
+		sortByColumn: 'Sort Order'
+
+	/// Run - Technology, Run - People, or Change.
+	column 'Category Group'
+		dataType: string
+		lineageTag: 390c7963-8475-4784-98d5-ea666cf05763
+		summarizeBy: none
+		sourceColumn: CategoryGroup
+
+	column 'Sort Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: c35d6882-4ed4-444a-97fc-ad1c07cabaff
+		summarizeBy: none
+		sourceColumn: SortOrder
+
+	partition 'Cost Category' = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("dim_cost_category.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"CategoryKey", type text}, {"Category", type text}, {"CategoryGroup", type text}, {"SortOrder", Int64.Type}})
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+

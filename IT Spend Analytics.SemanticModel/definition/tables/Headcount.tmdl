@@ -1,0 +1,48 @@
+/// Month-end headcount (FTE) by entity and business department: the denominator for IT spend per employee. Semi-additive: never sum across months; use the Average FTE or Closing FTE measures.
+table Headcount
+	lineageTag: ed414079-54a3-4f2e-994d-c3932afdf34a
+
+	column Month
+		dataType: dateTime
+		isHidden
+		formatString: mmm yyyy
+		lineageTag: efc055b3-7c53-460c-a68e-36f626d6f7e4
+		summarizeBy: none
+		sourceColumn: Month
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column EntityKey
+		dataType: string
+		isHidden
+		lineageTag: c4a315ae-5bcb-4aab-a4ce-a31333440a7c
+		summarizeBy: none
+		sourceColumn: EntityKey
+
+	column DepartmentKey
+		dataType: string
+		isHidden
+		lineageTag: 19a22cc0-2d67-4001-a5ed-f8d7b8af5469
+		summarizeBy: none
+		sourceColumn: DepartmentKey
+
+	/// Full-time equivalent employees at month end (all employees, not only IT).
+	column FTE
+		dataType: double
+		isHidden
+		formatString: #,0.0
+		lineageTag: 350261da-9d3a-4b76-aaec-00711d2bbb01
+		summarizeBy: none
+		sourceColumn: FTE
+
+	partition Headcount = m
+		mode: import
+		source =
+				let
+					Source = fnLoadCsv("fact_headcount.csv"),
+					Typed = Table.TransformColumnTypes(Source, {{"Month", type date}, {"EntityKey", type text}, {"DepartmentKey", type text}, {"FTE", type number}}, "en-US")
+				in
+					Typed
+
+	annotation PBI_ResultType = Table
+
